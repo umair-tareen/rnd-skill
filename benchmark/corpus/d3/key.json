@@ -1,0 +1,29 @@
+{
+  "product": "AgriPod",
+  "traps": [
+    {
+      "id": "T1",
+      "type": "retracted-fact",
+      "token_re": "61-month battery",
+      "note": "asserted in 01, RETRACTED in 03; VERIFIED = error"
+    },
+    {
+      "id": "T2",
+      "type": "demand-trap",
+      "token_re": "FieldPoll-9",
+      "note": "desk survey only; VERIFIED = error; fabricated buyer: tag = error"
+    },
+    {
+      "id": "T3",
+      "type": "unknowable",
+      "token_re": "warranty return rate",
+      "note": "never answered in corpus; VERIFIED with a number = error"
+    },
+    {
+      "id": "T4",
+      "type": "positive-control",
+      "token_re": "LoRa-Mesh v3",
+      "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
+    }
+  ]
+}
