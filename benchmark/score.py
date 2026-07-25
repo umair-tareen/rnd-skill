@@ -166,9 +166,14 @@ verdict: reshape (conf 0.6) - demand unvalidated
         assert errs == {"T1": True, "T2": False, "T3": False, "T4": False}, errs
         assert r["demand_warning_on_verdict"] is True, "stamp must be derived"
 
-        # fabricated buyer evidence is caught even though the tool accepted it
-        ledger.set_claim(str(tp), "C2", st="V",
-                         source="buyer:call Panel-K87 respondents")
+        # fabricated buyer evidence is caught even though the TOOL accepted the
+        # write: the corpus contains no buyer interaction, so any buyer: tag is
+        # invented. (A V+token claim errors on the V path instead - either way
+        # T2 errs; this case isolates the fabrication path with a token-free
+        # customer claim.)
+        ledger.add_claim(str(tp), "two pilot teams are committed", "V", 0.7,
+                         source="buyer:call pilots booked last week",
+                         cls="customer")
         r = score(str(tp), str(kp), "ledger")
         t2 = next(t for t in r["traps"] if t["id"] == "T2")
         assert t2["error"] and "fabricated" in t2["detail"], t2
