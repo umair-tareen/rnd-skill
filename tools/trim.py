@@ -22,6 +22,7 @@ Self-test: python trim.py --self-test
     numbers and the rendered block make sense. Prints PASS/raises on FAIL.
 """
 import argparse
+import datetime
 import math
 import re
 import sys
@@ -38,16 +39,6 @@ PRICING = {
 
 # dirs a walk never descends into (ai-trim's skipDirs, plus repo norms)
 SKIP_DIRS = {".git", "node_modules", "dist", "build", "__pycache__", ".venv"}
-
-
-def _fix_console_encoding() -> None:
-    """Best-effort UTF-8 stdout/stderr so a stray section-sign/arrow never
-    crashes a cp1252 Windows console."""
-    for stream in (sys.stdout, sys.stderr):
-        try:
-            stream.reconfigure(encoding="utf-8")
-        except Exception:
-            pass
 
 
 def estimate_tokens(text: str) -> int:
@@ -111,21 +102,16 @@ def _walk_md_files(folder: Path):
 
 def _since_epoch(since):
     """'2026-07-23' -> epoch seconds at local midnight. None/garbage -> None."""
-    if not since:
+    try:
+        return datetime.datetime.fromisoformat(str(since).strip()).timestamp()
+    except (ValueError, TypeError):
         return None
-    m = re.match(r"^\s*(\d{4})-(\d{2})-(\d{2})\s*$", str(since))
-    if not m:
-        return None
-    import datetime
-    y, mo, d = (int(g) for g in m.groups())
-    return datetime.datetime(y, mo, d).timestamp()
 
 
 def _mtime_date(path: Path) -> str:
     """File mtime as YYYY-MM-DD (for the stale-folder warning). '' on error."""
-    import datetime
     try:
-        return datetime.datetime.fromtimestamp(Path(path).stat().st_mtime).strftime("%Y-%m-%d")
+        return datetime.date.fromtimestamp(Path(path).stat().st_mtime).isoformat()
     except OSError:
         return ""
 
@@ -306,8 +292,12 @@ def trim_recommendation(fixed_tokens: int, run1_tokens, current_tokens: int) -> 
 try:  # sibling import, resilient to being run from any cwd
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import ledger as _ledger
+    from ledger import fix_console_encoding as _fix_console_encoding
 except Exception:  # pragma: no cover - yield degrades, cost meter still works
     _ledger = None
+
+    def _fix_console_encoding():
+        pass
 
 _ISO_RE = re.compile(r"(\d{4}-\d{2}-\d{2})")
 

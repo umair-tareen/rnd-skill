@@ -1,16 +1,19 @@
 """squeeze.py -- typed lossy compression: verbose blob -> load-bearing signal.
 
-Why: /rnd's thesis ledger (see OS\\capabilities\\rnd-thesis-ledger-SPEC.md, S:I.3)
+Why: /rnd's thesis ledger (see SPEC.md, S:I.3)
 must stay token-minimal even though evidence keeps arriving as noisy tool
 output, research dumps, social scans, and kill-check transcripts. This is the
 INTAKE FILTER: run any blob through squeeze() BEFORE it enters context or gets
 written into a thesis file's SC/SQ sections.
 
 Provenance: ports skibidiskib/Ai-squeeze (github.com/skibidiskib/Ai-squeeze,
-src/squeeze.ts + src/index.ts) line-for-line where the shapes match, same
-defaults (THRESHOLD=20 lines, HEAD=10, TAIL=10, 4 chars/token estimate, and
-the exact CLI footer format). Adds three ledger-domain kinds the source
-repo has no notion of, because /rnd evidence is not CLI tool output:
+src/squeeze.ts + src/index.ts) - the MECHANISM (detect -> typed compressor,
+THRESHOLD=20 lines, HEAD=10, TAIL=10, 4 chars/token, the exact CLI footer)
+plus its json/generic compressors. The source repo's five coding-agent kinds
+(typescript-errors, test-results, npm-install, stack-trace, git-log) were
+deliberately dropped: no /rnd move ever produces them (a ponytail-review cut,
+~240 lines; git history has them if a fork wants them back). Adds three
+ledger-domain kinds the source repo has no notion of:
   - research-dump   deep-research prose with VERIFIED/SUSPECTED lines, claim
                      lines, and cited URLs buried in it -> keep signal, drop prose.
   - social-scan     subreddit/score/upvote scan rows -> keep top-scored rows
@@ -49,11 +52,6 @@ TAIL_LINES = 10
 CHARS_PER_TOKEN = 4  # ai-trim's estimate, reused here for the footer stat
 
 KINDS = (
-    "typescript-errors",
-    "test-results",
-    "npm-install",
-    "stack-trace",
-    "git-log",
     "json-blob",
     "research-dump",
     "social-scan",
@@ -80,21 +78,8 @@ def strip_ansi(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Detection (ported: detectType() in squeeze.ts, + 3 ledger-domain additions)
+# Detection (structure ported from detectType(); coding-agent kinds cut)
 # ---------------------------------------------------------------------------
-
-_TS_ERROR_RE = re.compile(r"error TS\d+", re.M)
-_TS_ERROR_LOC_RE = re.compile(r"\.tsx?\(\d+,\d+\):\s*error", re.M)
-_TEST_TESTS_RE = re.compile(r"Tests?:\s+\d+", re.M)
-_TEST_PASSFAIL_RE = re.compile(r"(?:passed|failed|skipped)", re.I)
-_TEST_PASSFAIL_LINE_RE = re.compile(r"(?:PASS|FAIL)\s+\S+", re.M)
-_TEST_SUITES_RE = re.compile(r"Test Suites?:", re.M)
-_TEST_CHECKMARK_LINE_RE = re.compile(r"^\s*[✓✗✕●]\s")
-_NPM_ADDED_RE = re.compile(r"added \d+ packages?", re.M)
-_NPM_WARN_RE = re.compile(r"(?:npm|pnpm|yarn) warn", re.I | re.M)
-_ERROR_HEADER_RE = re.compile(r"(?:Error|Exception|TypeError|ReferenceError|SyntaxError):")
-_AT_LINE_RE = re.compile(r"^\s+at\s")
-_GIT_HASH_LINE_RE = re.compile(r"^[a-f0-9]{7,12}\s")
 
 _URL_RE = re.compile(r"https?://\S+")
 _VERIFIED_SUSPECTED_RE = re.compile(r"\b(VERIFIED|SUSPECTED)\b")
@@ -107,29 +92,7 @@ _KILL_KEYWORDS_RE = re.compile(r"(?i)\b(verdict|load-bearing|falsifier)\b")
 
 def detect_type(text: str) -> str:
     """Classify a blob so the right compressor runs. See KINDS for the list."""
-    if _TS_ERROR_RE.search(text) or _TS_ERROR_LOC_RE.search(text):
-        return "typescript-errors"
-
     lines = text.split("\n")
-    checkmark_lines = sum(1 for l in lines if _TEST_CHECKMARK_LINE_RE.match(l))
-    if (
-        (_TEST_TESTS_RE.search(text) and _TEST_PASSFAIL_RE.search(text))
-        or (_TEST_PASSFAIL_LINE_RE.search(text) and _TEST_SUITES_RE.search(text))
-        or checkmark_lines > 5
-    ):
-        return "test-results"
-
-    if _NPM_ADDED_RE.search(text) or _NPM_WARN_RE.search(text):
-        return "npm-install"
-
-    if _ERROR_HEADER_RE.search(text):
-        at_lines = sum(1 for l in lines if _AT_LINE_RE.match(l))
-        if at_lines >= 3:
-            return "stack-trace"
-
-    hash_lines = sum(1 for l in lines if _GIT_HASH_LINE_RE.match(l))
-    if hash_lines > 10:
-        return "git-log"
 
     trimmed = text.strip()
     if len(trimmed) > 500 and (trimmed.startswith("{") or trimmed.startswith("[")):
@@ -161,208 +124,8 @@ def detect_type(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Compressors ported from squeeze.ts (same behavior/defaults as the source)
+# Compressors (json/generic ported from squeeze.ts; ledger kinds are ours)
 # ---------------------------------------------------------------------------
-
-_TS_ERROR_LINE_RE = re.compile(r"^(.+?)\((\d+),(\d+)\):\s*error\s+(TS\d+):\s*(.+)$")
-
-
-def compress_typescript_errors(output: str) -> str:
-    lines = output.split("\n")
-    errors = []
-    non_error_lines = []
-    for line in lines:
-        m = _TS_ERROR_LINE_RE.match(line)
-        if m:
-            errors.append(
-                {"file": m.group(1), "line": int(m.group(2)), "code": m.group(4), "message": m.group(5)}
-            )
-        elif line.strip():
-            non_error_lines.append(line)
-
-    if not errors:
-        return output
-
-    files = {e["file"] for e in errors}
-    by_code: dict[str, int] = {}
-    for e in errors:
-        by_code[e["code"]] = by_code.get(e["code"], 0) + 1
-    sorted_codes = sorted(by_code.items(), key=lambda kv: kv[1], reverse=True)
-
-    result = [f"TypeScript: {len(errors)} errors in {len(files)} files", "", "By error code:"]
-    for code, count in sorted_codes[:5]:
-        result.append(f"  {code}: {count} occurrences")
-    if len(sorted_codes) > 5:
-        result.append(f"  ... and {len(sorted_codes) - 5} more error types")
-
-    result.append("")
-    result.append("First errors:")
-    shown: set[str] = set()
-    for e in errors:
-        key = f"{e['code']}:{e['message']}"
-        if key in shown:
-            continue
-        shown.add(key)
-        result.append(f"  {e['file']}:{e['line']} {e['code']}: {e['message']}")
-        if len(shown) >= 5:
-            break
-
-    summary_line = next((l for l in non_error_lines if re.search(r"Found \d+ error", l, re.I)), None)
-    if summary_line:
-        result.append("")
-        result.append(summary_line)
-
-    return "\n".join(result)
-
-
-def compress_test_results(output: str) -> str:
-    lines = output.split("\n")
-    result = []
-
-    summary_lines = [
-        l
-        for l in lines
-        if re.search(r"Test Suites?:", l, re.I)
-        or re.search(r"Tests?:", l, re.I)
-        or re.search(r"Snapshots?:", l, re.I)
-        or re.search(r"Time:", l, re.I)
-        or re.search(r"^Ran \d+ tests?", l, re.I)
-    ]
-
-    fail_blocks: list[str] = []
-    in_fail_block = False
-    current_block: list[str] = []
-
-    for line in lines:
-        if re.match(r"^\s*(?:FAIL|✗|✕|●)\s", line):
-            if current_block:
-                fail_blocks.append("\n".join(current_block))
-            current_block = [line]
-            in_fail_block = True
-        elif in_fail_block:
-            if line.strip() == "" and len(current_block) > 3:
-                fail_blocks.append("\n".join(current_block))
-                current_block = []
-                in_fail_block = False
-            elif re.match(r"^\s*(?:PASS|FAIL|✓|✗|✕|●)\s", line):
-                fail_blocks.append("\n".join(current_block))
-                if re.search(r"(?:FAIL|✗|✕)", line):
-                    current_block = [line]
-                else:
-                    current_block = []
-                    in_fail_block = False
-            else:
-                current_block.append(line)
-    if in_fail_block and current_block:
-        fail_blocks.append("\n".join(current_block))
-
-    error_lines = [
-        l
-        for l in lines
-        if re.search(r"Expected:", l)
-        or re.search(r"Received:", l)
-        or re.search(r"AssertionError", l)
-        or re.search(r"thrown:", l)
-        or re.search(r"Error:", l)
-    ]
-
-    if summary_lines:
-        result.extend(l.strip() for l in summary_lines)
-
-    pass_count = sum(1 for l in lines if re.match(r"^\s*(?:PASS|✓)\s", l))
-    fail_count = sum(1 for l in lines if re.match(r"^\s*(?:FAIL|✗|✕)\s", l))
-
-    if not summary_lines and (pass_count > 0 or fail_count > 0):
-        result.append(f"Results: {pass_count} passed, {fail_count} failed")
-
-    if fail_blocks:
-        result.append("")
-        result.append("FAILURES:")
-        for block in fail_blocks[:5]:
-            result.append("\n".join(block.split("\n")[:6]))
-            result.append("")
-        if len(fail_blocks) > 5:
-            result.append(f"... and {len(fail_blocks) - 5} more failures")
-    elif error_lines:
-        result.append("")
-        result.append("Errors:")
-        result.extend("  " + l.strip() for l in error_lines[:5])
-
-    return "\n".join(result)
-
-
-def compress_npm_install(output: str) -> str:
-    lines = output.split("\n")
-    result = []
-
-    summary_line = next((l for l in lines if re.search(r"added \d+ packages?", l, re.I)), None)
-    if summary_line:
-        result.append(summary_line.strip())
-
-    warnings = [l for l in lines if re.search(r"npm warn|pnpm warn|yarn warn", l, re.I)]
-    deprecations = [l for l in warnings if re.search(r"deprecated", l, re.I)]
-    vulnerabilities = next((l for l in lines if re.search(r"\d+ vulnerabilit", l, re.I)), None)
-
-    if deprecations:
-        result.append(f"{len(deprecations)} deprecation warning(s)")
-    if len(warnings) - len(deprecations) > 0:
-        result.append(f"{len(warnings) - len(deprecations)} other warning(s)")
-    if vulnerabilities:
-        result.append(vulnerabilities.strip())
-
-    fund_line = next((l for l in lines if re.search(r"\d+ packages? are looking for funding", l, re.I)), None)
-    if fund_line:
-        result.append(fund_line.strip())
-
-    return "\n".join(result) if result else "npm install completed (no summary found)"
-
-
-def compress_stack_trace(output: str) -> str:
-    lines = output.split("\n")
-    result = []
-
-    error_idx = next((i for i, l in enumerate(lines) if _ERROR_HEADER_RE.search(l)), -1)
-    if error_idx == -1:
-        return output
-
-    context_start = max(0, error_idx - 2)
-    result.extend(lines[context_start : error_idx + 1])
-
-    at_lines = [l for l in lines[error_idx + 1 :] if _AT_LINE_RE.match(l)]
-    user_frames = [l for l in at_lines if "node_modules" not in l and "internal/" not in l]
-    lib_frames = [l for l in at_lines if "node_modules" in l or "internal/" in l]
-
-    result.extend(user_frames[:5])
-    if len(user_frames) > 5:
-        result.append(f"    ... {len(user_frames) - 5} more user frames")
-    if lib_frames:
-        result.append(f"    ... {len(lib_frames)} library/internal frames")
-
-    after_stack = [l for l in lines[error_idx + 1 :] if not _AT_LINE_RE.match(l) and l.strip()]
-    if after_stack:
-        result.append("")
-        result.extend(after_stack[:3])
-
-    return "\n".join(result)
-
-
-def compress_git_log(output: str) -> str:
-    lines = [l for l in output.split("\n") if l.strip()]
-    total = len(lines)
-    if total <= THRESHOLD:
-        return output
-
-    result = [f"Git log: {total} entries", "", "Recent:"]
-    result.extend("  " + l for l in lines[:10])
-
-    if total > 15:
-        result.append(f"  ... {total - 15} more commits ...")
-        result.append("")
-        result.append("Oldest shown:")
-        result.extend("  " + l for l in lines[-5:])
-
-    return "\n".join(result)
-
 
 def compress_json(output: str) -> str:
     trimmed = output.strip()
@@ -501,11 +264,6 @@ def compress_kill_transcript(output: str) -> str:
 # ---------------------------------------------------------------------------
 
 _COMPRESSORS = {
-    "typescript-errors": compress_typescript_errors,
-    "test-results": compress_test_results,
-    "npm-install": compress_npm_install,
-    "stack-trace": compress_stack_trace,
-    "git-log": compress_git_log,
     "json-blob": compress_json,
     "research-dump": compress_research_dump,
     "social-scan": compress_social_scan,
@@ -587,17 +345,6 @@ def _fake_research_dump(n_lines: int = 60) -> str:
     return "\n".join(lines[:n_lines])
 
 
-def _fake_ts_errors(n_errors: int = 480) -> str:
-    codes = ["TS2322", "TS2345", "TS2554", "TS7006", "TS2531"]
-    lines = []
-    for i in range(n_errors):
-        f = f"src/module{i % 12}.ts"
-        code = codes[i % len(codes)]
-        lines.append(f"{f}({i % 200 + 1},{i % 40 + 1}): error {code}: Type mismatch in expression #{i}.")
-    lines.append(f"Found {n_errors} errors.")
-    return "\n".join(lines)
-
-
 def _fake_social_scan(n: int = 30) -> str:
     subs = ["r/SaaS", "r/smallbusiness", "r/artificial", "r/webdev"]
     lines = []
@@ -643,12 +390,12 @@ def run_selftest() -> bool:
     check("compressed lines < original", r1["comp_lines"] < r1["orig_lines"])
     check("footer present", "-- squeezed [" in r1["compressed"])
 
-    print("typescript-errors (~500 lines):")
-    ts = _fake_ts_errors(480)
-    r2 = squeeze(ts)
+    print("json-blob (~200 keys):")
+    blob = json.dumps({f"key_{i}": {"n": i, "note": "x" * 30} for i in range(200)}, indent=2)
+    r2 = squeeze(blob)
     print(f"  kind={r2['kind']} lines {r2['orig_lines']} -> {r2['comp_lines']}"
           f" tokens_saved={r2['tokens_saved']}")
-    check("auto-detected as typescript-errors", r2["kind"] == "typescript-errors", r2["kind"])
+    check("auto-detected as json-blob", r2["kind"] == "json-blob", r2["kind"])
     check("compressed lines < original", r2["comp_lines"] < r2["orig_lines"])
     check("footer present", "-- squeezed [" in r2["compressed"])
 
@@ -726,11 +473,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    # cp1252 console guard: reconfigure to utf-8 so a stray unicode char
-    # (checkmarks in test-results input, etc.) never crashes stdout.
-    try:
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
-    except AttributeError:
-        pass
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from ledger import fix_console_encoding
+    fix_console_encoding()
     sys.exit(main())

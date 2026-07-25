@@ -161,7 +161,7 @@ failure, because it is invisible. `init` on an existing run PRESERVES it
 | repo | its working | where it lives in the ledger |
 |---|---|---|
 | **ai-codex** | compact pre-built index that replaces re-derivation; FORMAT.md caveman spec (§-sections, symbols, pipe tables, monotonic ids, status cells, one-file ≤500ln) | the thesis file IS a codex-for-a-decision. Adopt FORMAT.md verbatim. Re-read every run instead of re-researching (§I.2 step 1). |
-| **ai-squeeze** | `detectType(blob)` → typed lossy compression: count + top-N + head/tail + dedup; report tokens saved (defaults THRESH 20 / HEAD 10 / TAIL 10) | INTAKE filter: `squeeze(blob, kind)` before ANY evidence enters the ledger or passes between moves. kinds: `research-dump` → claims+sources+risks · `social-scan` → top-signals+counts+quote+URL · `tool-output` · `kill-transcript` → verdict+LB-claims+falsifiers. |
+| **ai-squeeze** | `detectType(blob)` → typed lossy compression: count + top-N + head/tail + dedup; report tokens saved (defaults THRESH 20 / HEAD 10 / TAIL 10) | INTAKE filter: `squeeze(blob, kind)` before ANY evidence enters the ledger or passes between moves. kinds: `research-dump` → claims+sources+risks · `social-scan` → top-signals+counts+quote+URL · `kill-transcript` → verdict+LB-claims+falsifiers · `json-blob` · `generic`. (The source repo's five coding-agent kinds were cut by a ponytail review - no /rnd move produces them; git history keeps them.) |
 | **ai-trim** | 4 chars/token est; per-model $/token; always-loaded vs on-demand split; recommend cuts | the §M METER. fixed = ledger re-read ("always-loaded"); marginal = new research ("on-demand"). Emit tok + $ + run1-vs-runN + trim rec. |
 
 ## §V INVARIANTS

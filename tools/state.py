@@ -1,4 +1,4 @@
-"""state.py -- the /rnd run manifest: checkpoint, crash, resume.
+﻿"""state.py -- the /rnd run manifest: checkpoint, crash, resume.
 
 Spec: SPEC.md at the repo root.
 
@@ -48,6 +48,10 @@ import tempfile
 from datetime import date as _date
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ledger import _atomic_write, _today, _split_row as _base_split_row, \
+    fix_console_encoding as _fix_console_encoding  # ponytail: shared, not re-rolled
+
 STATE_FILE = "STATE.md"
 
 # the lean 4-move run; EVIDENCE splits into its two lanes so a limit-kill
@@ -66,29 +70,14 @@ VALID_ST = {PENDING, WIP, DONE, FAILED, SKIPPED}
 SETTLED = {DONE, SKIPPED}
 
 def _split_row(line: str):
-    """Split a table row on UNESCAPED '|' only, then unescape + trim, and drop
-    the empty cells the leading/trailing pipes produce. A rigid column regex
-    breaks the moment a note contains an escaped pipe (e.g. a verdict line),
-    silently dropping the row -- so parse the same way ledger.py does."""
-    parts = re.split(r"(?<!\\)\|", line)
-    cells = [p.strip().replace("\\|", "|") for p in parts]
+    """ledger's unescaped-pipe split, plus stripping the empty edge cells the
+    leading/trailing table pipes produce."""
+    cells = _base_split_row(line)
     while cells and cells[0] == "":
         cells.pop(0)
     while cells and cells[-1] == "":
         cells.pop()
     return cells
-
-
-def _today() -> str:
-    return _date.today().isoformat()
-
-
-def _fix_console_encoding() -> None:
-    for stream in (sys.stdout, sys.stderr):
-        try:
-            stream.reconfigure(encoding="utf-8")
-        except Exception:
-            pass
 
 
 def _cell(v) -> str:
@@ -99,22 +88,6 @@ def _cell(v) -> str:
 
 def _state_path(run_folder) -> Path:
     return Path(run_folder) / STATE_FILE
-
-
-def _atomic_write(path, text: str) -> None:
-    p = Path(path)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=str(p.parent), suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text)
-        os.replace(tmp, p)
-    except BaseException:
-        try:
-            os.unlink(tmp)
-        except OSError:
-            pass
-        raise
 
 
 def render(doc: dict) -> str:

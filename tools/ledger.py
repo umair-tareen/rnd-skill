@@ -92,11 +92,10 @@ VALID_CLAIM_ST = {"V", "A", "R", "O"}
 # toward confident world-claims and assumed customer-claims without anyone
 # noticing. Classing them makes that visible, and makes it impossible for
 # desk research to pass itself off as demand validation.
-VALID_CLAIM_CLS = {
-    "world":    "settled by desk research: competitors, regulation, pricing bands, tech",
-    "customer": "settled ONLY by buyer contact: will they pay, are they reachable, what they want",
-    "internal": "settled by our own data: our hours, our capacity, our unit economics",
-}
+# world: settled by desk research (competitors, regulation, pricing, tech)
+# customer: settled ONLY by buyer contact (will they pay, are they reachable)
+# internal: settled by our own data (our hours, capacity, unit economics)
+VALID_CLAIM_CLS = {"world", "customer", "internal"}
 # A customer-class claim goes st='V' only when its source is a BUYER
 # INTERACTION (a reply, a booked call, a signature, a payment). A research
 # comparable is a world-class source and can never verify a customer claim.
@@ -129,6 +128,16 @@ SECTION_HEADING = {
     "B": "## §B BUGS",
 }
 SECTION_ORDER = ["T", "C", "F", "Q", "D", "M", "B"]
+
+
+def fix_console_encoding() -> None:
+    """UTF-8 stdout/stderr so SS/arrow glyphs never crash a cp1252 console.
+    Shared by every tool in this package (ponytail: one home, four callers)."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
 
 
 def _today() -> str:
@@ -877,7 +886,6 @@ def _cli_demo(args) -> int:
     demand stamp, tamper with it by hand, watch one mutation put it back,
     try to clear it with free text (refused), clear it with typed buyer
     evidence. This is the product's central claim, executed live."""
-    import shutil as _sh
     own_dir = args.dir is None
     d = Path(tempfile.mkdtemp(prefix="rnd_demo_")) if own_dir else Path(args.dir)
     d.mkdir(parents=True, exist_ok=True)
@@ -930,7 +938,7 @@ def _cli_demo(args) -> int:
         return 0
     finally:
         if own_dir:
-            _sh.rmtree(d, ignore_errors=True)
+            shutil.rmtree(d, ignore_errors=True)
 
 
 def _cli_stale(args) -> int:
@@ -1299,9 +1307,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    try:
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
-    except Exception:
-        pass
+    fix_console_encoding()
     sys.exit(main())

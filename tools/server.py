@@ -191,8 +191,8 @@ def thesis_compact(path: str) -> dict:
 def squeeze_text(text: str, kind: str = "") -> dict:
     """Compress a verbose blob to load-bearing signal BEFORE it enters context
     or the thesis. Auto-detects kind (research-dump / social-scan /
-    kill-transcript / tool-output / typescript-errors / ...) or force one.
-    Returns the compressed text plus tokens saved."""
+    kill-transcript / json-blob / generic) or force one. Returns the
+    compressed text plus tokens saved."""
     return _squeeze.squeeze(text, kind=kind or None)
 
 
