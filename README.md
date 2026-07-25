@@ -48,9 +48,10 @@ cannot be hand-set, go stale, or be deleted.
 | `tools/squeeze.py` | typed lossy compression for evidence blobs before they enter context or the ledger |
 | `tools/trim.py` | the cost + yield meter: fixed vs marginal tokens, run1-vs-runN delta, evidence-vs-assumption accounting |
 | `tools/state.py` | the run manifest: checkpoint every move, resume after a crash, redo (never skip) the interrupted move |
+| `tools/server.py` | optional MCP server exposing all of the above as 13 tools to any MCP client |
 
-All four tools are stdlib-only Python 3.10+, each with a built-in self-test.
-The model supplies judgment; the tools guarantee the mechanics.
+All four tool modules are stdlib-only Python 3.10+, each with a built-in
+self-test. The model supplies judgment; the tools guarantee the mechanics.
 
 ## Quickstart
 
@@ -75,6 +76,26 @@ python tools/state.py --self-test
 ```
 
 Then, in Claude Code: `run R&D on <your idea>`.
+
+## MCP server (optional)
+
+The same mechanics as MCP tools, for Claude Code, Claude Desktop, Cursor, or
+any MCP client. The tool modules stay stdlib-only; the server is the one
+optional dependency:
+
+```bash
+pip install mcp
+claude mcp add rnd -- python /absolute/path/to/tools/server.py
+```
+
+13 tools: `thesis_new` / `thesis_show` / `thesis_stale`, `claim_add` /
+`claim_set`, `open_set`, `flip_set`, `verdict_set`, `diff_append`,
+`thesis_compact`, `squeeze_text`, `run_measure` (cost AND yield, always
+together), and `run_state` (the crash-safe run manifest). The invariants ride
+along: the no-source guard, the derived demand stamp, and the
+redo-never-skip resume rule are enforced server-side, not requested politely
+in a prompt. Use absolute paths in every call; MCP servers inherit an
+arbitrary working directory.
 
 ## Why the resume path is mechanical
 
