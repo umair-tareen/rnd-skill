@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
-# local R&D state, if you keep it inside the repo
-workspace/
-theses/
-runs/
+# local R&D state, if you keep it inside the repo (examples/ IS tracked --
+# a repo configured to never contain its own demo was roast finding F4)
+/workspace/
+/theses/
+/runs/

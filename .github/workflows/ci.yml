@@ -28,3 +28,9 @@ jobs:
         run: python tools/trim.py --self-test
       - name: state
         run: python tools/state.py --self-test
+      - name: demo (the stamp, live)
+        run: python tools/ledger.py demo
+      - name: mcp server (stdio handshake + enforcement paths)
+        run: |
+          pip install mcp
+          python tools/test_server.py

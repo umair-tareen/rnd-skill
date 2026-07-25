@@ -1,0 +1,25 @@
+$ python tools/trim.py examples/acme/run-2-recheck --thesis examples/acme/acme.md
+
+§M METER
+
+unit: written-artifact tokens (chars/4) -- a size PROXY for what the run wrote, NOT API spend
+
+fixed (always-loaded, ledger re-read): 631 tok / <$0.01 est. (opus)
+marginal (on-demand, new research this run): 321 tok / <$0.01 est. (opus)
+total: 952 tok / ~$0.01 est. (opus)
+
+run1 (baseline): 9,846 tok / ~$0.15 est.
+this run:        952 tok / ~$0.01 est.
+delta: this run = 9.7% of run1 cost (-90.3%)
+
+trim: landscape stable -> next run recheck-only ~1k tokens
+
+§Y YIELD (run 2)
+
+claims added: 1 (V=1 A=0 R=0), 0 load-bearing
+mean confidence of what it added: 0.75
+by class: world=1
+questions closed: 1 on EVIDENCE [Q1<-C8], 0 on an ASSUMPTION
+cost per verified claim: 952 tok
+  !! 0 load-bearing claims added: cheap, but it moved nothing the verdict rests on
+  !! demand-UNVALIDATED: 2 customer claim(s), 0 verified by buyer contact (C4,C5)

@@ -17,26 +17,36 @@ of re-researching the world.
 **1. Re-derivation.** Most AI research is a one-shot report: expensive, then
 thrown away. Ask again next month and you pay full price to rediscover a mostly
 unchanged landscape. Here, run 1 populates a per-target thesis ledger; run N
-loads it (~1k tokens), re-checks only the pre-registered kill conditions, and
-researches only the open questions. On the first live thesis, run 2 cost
-**5.3% of run 1** (measured by the included meter, from the files, not
-self-reported).
+loads it, re-checks only the pre-registered kill conditions, and researches
+only the open questions. The committed worked example reproduces the whole
+mechanism in 60 seconds: `examples/acme` is a two-run thesis where run 2
+measures **9.7% of run 1** - and the meter states its own unit
+(written-artifact tokens, a size proxy, NOT API spend) right in its output.
+One live private target measured similarly (run 2 at ~5% of run 1, same
+proxy, n=1, self-reported - treat that number as an illustration, not a
+benchmark).
 
 **2. Cheapness masquerading as efficiency.** A cost meter alone rewards
 spending less, and the cheapest possible run answers nothing. So the meter
 prints **yield beside cost**: claims added, how many are load-bearing, mean
 confidence, and questions closed on EVIDENCE versus closed on an ASSUMPTION.
-That same 5.3% run 2 also printed: `0 load-bearing claims added`, `1 question
-closed on an assumption`. Both numbers, always.
+On the one live run it printed `0 load-bearing claims added` next to the cost
+saving - a metric designed to make its own headline look worse. Both numbers,
+always.
 
 **3. Desk research masquerading as validation.** A research engine verifies
 what a desk can reach, so a thesis drifts toward confident world-claims and
 assumed customer-claims and reads as validated while nobody has tested demand.
 Every claim is classed `world` / `customer` / `internal` by what kind of
-evidence could ever settle it. A customer claim reaches VERIFIED only on a
-buyer interaction (a reply, a booked call, a payment). While none is, the tool
-derives a `demand-UNVALIDATED` stamp onto the verdict line on every write. It
-cannot be hand-set, go stale, or be deleted.
+evidence could ever settle it. A customer claim reaches VERIFIED only with
+**typed buyer evidence** - a source prefixed `buyer:reply|call|signature|payment`;
+the tool refuses a pricing comparable, an analyst note, or any free text.
+While no customer claim carries such evidence, a `demand-UNVALIDATED` stamp is
+derived onto the verdict line on every write: delete it by hand and the next
+mutation puts it back. Be clear about the mechanism's honest limit: it is
+**tamper-evident, not a lie detector**. It enforces that the buyer-contact
+question is asked, in a checkable form, every time - the truth of the evidence
+is the operator's. See it live in 30 seconds: `python tools/ledger.py demo`.
 
 ## What's in the box
 
@@ -56,14 +66,23 @@ self-test. The model supplies judgment; the tools guarantee the mechanics.
 ## Quickstart
 
 ```bash
-# install the skill (Claude Code)
-mkdir -p ~/.claude/skills/rnd && cp SKILL.md ~/.claude/skills/rnd/
+# install the skill (Claude Code) -- the tools ship WITH it, not separately
+mkdir -p ~/.claude/skills/rnd
+cp SKILL.md ~/.claude/skills/rnd/
+cp -r tools ~/.claude/skills/rnd/tools
 
-# scaffold a thesis
+# the 30-second proof: the demand stamp, tampered with and restored, live
+python tools/ledger.py demo
+
+# walk the committed worked example (a full two-run thesis)
+python tools/ledger.py show examples/acme/acme.md
+python tools/trim.py examples/acme/run-2-recheck --thesis examples/acme/acme.md
+
+# scaffold your own thesis; maintain it from any shell (no Claude required)
 python tools/ledger.py new acme "Acme changelog tool" --out theses/acme.md
-
-# after a run: what did it cost, and what did it buy?
-python tools/trim.py runs/acme-2026-07-21 --thesis theses/acme.md
+python tools/ledger.py add-claim theses/acme.md "rivals bundle it free" \
+  --st V --conf 0.8 --source example.com/pricing --cls world --load-bearing
+python tools/ledger.py set-open theses/acme.md Q1 --st x --closed-by C3
 
 # what has gone unexamined? (exit 1 if anything needs attention)
 python tools/ledger.py stale --dir theses
@@ -94,8 +113,10 @@ claude mcp add rnd -- python /absolute/path/to/tools/server.py
 together), and `run_state` (the crash-safe run manifest). The invariants ride
 along: the no-source guard, the derived demand stamp, and the
 redo-never-skip resume rule are enforced server-side, not requested politely
-in a prompt. Use absolute paths in every call; MCP servers inherit an
-arbitrary working directory.
+in a prompt. Paths must be absolute in every call and this too is enforced -
+a relative path is refused with the reason, because MCP servers inherit an
+arbitrary working directory. The server has its own CI-run stdio test
+(`tools/test_server.py`) covering the handshake and the refusal paths.
 
 ## Why the resume path is mechanical
 
@@ -107,15 +128,32 @@ left WIP and gets REDONE on resume, never skipped.** Skipping it would silently
 drop exactly the work the crash interrupted while still looking like a clean
 resume, which is the worst available failure because it is invisible.
 
+## Prior art, and what is actually new here
+
+The living-claim-ledger idea has independent academic convergence:
+**ResearchLoop** ("ResearchLoop: An Evidence-Gated Control Plane for
+AI-Assisted Research", [arXiv:2605.28282](https://arxiv.org/abs/2605.28282))
+treats claim ledgers and evidence objects as durable project state across
+iterations - read it. The buyer-contact epistemic is older still: it is
+lean-startup discipline, practiced at scale by product-discovery platforms.
+What we did not find anywhere, and claim as this repo's contribution: the
+**derived, non-storable demand stamp** on the verdict line of an agent's own
+research output, **typed buyer evidence** as a write-time refusal, and a cost
+meter that **prints yield beside cost** (observability tools stop at evals).
+If you find prior art for any of those three, open an issue - this repo's
+whole premise is that being corrected early is the win.
+
 ## The bug log is the point
 
-`SPEC.md` §B records four real defects, all found by turning the skill's own
-interrogation ("what's the biggest concern? what am I missing?") on itself:
+`SPEC.md` §B records the defects found so far, first by turning the skill's
+own interrogation ("what's the biggest concern? what am I missing?") on
+itself, then by a five-persona adversarial review with an independent judge:
 a mutation API that existed only in prose, a cost meter that reported 105%
-when the truth was 5%, a cost meter with no yield counterweight, and a resume
-path that had never survived a kill. Every invariant in the spec was earned by
-one of them. That is the standard the skill holds its research targets to, so
-it is the standard it gets held to.
+when the truth was 5%, a cost meter with no yield counterweight, a resume
+path that had never survived a kill, an install doc that broke the first
+command, and a "tool-enforced" stamp that free text could clear. Every
+invariant in the spec was earned by one of them. That is the standard the
+skill holds its research targets to, so it is the standard it gets held to.
 
 ## Credits
 
@@ -129,10 +167,24 @@ have it; it is optional.
 
 ## Honest status
 
-- Proven live: the recheck/diff loop end to end (run 1 full sweep, run 2 at
-  5.3% with the yield warnings above), the demand stamp, the staleness report,
-  and a mid-move kill resumed by a cold process in rehearsal.
-- Not yet proven: more than one live thesis, and a resume through a real
-  mid-run usage-limit kill (rehearsed mechanically, not yet observed live).
+- Proven: the recheck/diff loop end to end (the committed `examples/acme`
+  reproduces it; one private live target measured similarly), the demand
+  stamp with typed-evidence refusal, the staleness report, a mid-move kill
+  resumed by a cold process in rehearsal, and the MCP server over real stdio
+  JSON-RPC including its enforcement paths - all in CI on Linux and Windows.
+- Not yet proven: more than one live thesis; a resume through a real mid-run
+  usage-limit kill (rehearsed, not yet observed live); and adoption by anyone
+  other than the author. Held to this repo's own taxonomy, "others will adopt
+  this" is a customer-class claim currently at ASSUMED - it verifies the same
+  way every customer claim does: on real buyer contact, not on a README.
 
-MIT License.
+## What's in the box, part 2
+
+`examples/acme/` is a complete synthetic two-run thesis generated by the
+tools themselves - the ledger after two runs, both run folders with their
+crash-safe manifests, and the real meter output. `python tools/ledger.py demo`
+is the 30-second live proof of the stamp.
+
+MIT License. Portions port three MIT repos by
+[skibidiskib](https://github.com/skibidiskib); their notice is reproduced in
+LICENSE.

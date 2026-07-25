@@ -23,8 +23,15 @@ only where it carries integrity (verified evidence plus one independent attempt
 to kill the conclusion).
 
 ## Setup (once)
-- Tools live in `tools/` of this repo: `ledger.py`, `squeeze.py`, `trim.py`,
-  `state.py`. Python 3.10+, stdlib only.
+- Install this skill WITH its tools (the skill is useless without them):
+  `~/.claude/skills/rnd/` must contain BOTH this `SKILL.md` AND the `tools/`
+  directory. Python 3.10+, stdlib only.
+- **`<skill-dir>`** below = the absolute directory containing THIS file
+  (default `~/.claude/skills/rnd`; on Windows `%USERPROFILE%\.claude\skills\rnd`).
+  Resolve it ONCE at the start of every run and use it in every tool command.
+  NEVER call `python tools/...` relative to the working directory - the cwd is
+  some unrelated project, and a relative path fails or, worse, runs a
+  different copy.
 - Pick a workspace for durable state and use ABSOLUTE paths to it in every run:
   - theses: `<workspace>/theses/<slug>.md` (the durable store, one per target)
   - runs: `<workspace>/runs/<slug>-<date>/` (scratch, one folder PER RUN)
@@ -49,12 +56,12 @@ earn it. A clean no-go you can defend beats a massaged go.
 Usage limits and crashes WILL interrupt long runs; that is the environment, not
 a failure. The manifest is MECHANICAL - `state.py` owns it, not your memory:
 ```
-python tools/state.py show  <run-folder>            # FIRST call of every invoke
-python tools/state.py init  <run-folder> --target "<X>" --thesis <path>
-python tools/state.py start <run-folder> <MOVE>     # before the move
-python tools/state.py done  <run-folder> <MOVE> --artifact 01-research.md --note "8 cited claims"
-python tools/state.py fail|skip <run-folder> <MOVE> --note "<why>"
-python tools/state.py next  <run-folder>            # the move to run now, or ALL-DONE
+python <skill-dir>/tools/state.py show  <run-folder>   # FIRST call of every invoke
+python <skill-dir>/tools/state.py init  <run-folder> --target "<X>" --thesis <path>
+python <skill-dir>/tools/state.py start <run-folder> <MOVE>     # before the move
+python <skill-dir>/tools/state.py done  <run-folder> <MOVE> --artifact 01-research.md --note "8 cited claims"
+python <skill-dir>/tools/state.py fail|skip <run-folder> <MOVE> --note "<why>"
+python <skill-dir>/tools/state.py next  <run-folder>   # the move to run now, or ALL-DONE
 ```
 - **Resume, don't restart.** `state.py show` is the FIRST thing every invoke
   does, before spending anything. `init` on an existing run PRESERVES it (only
@@ -67,6 +74,10 @@ python tools/state.py next  <run-folder>            # the move to run now, or AL
 - **Low burst.** Never more than 2 subagents at once; under tight budget go
   sequential or run the move in the main loop and LABEL it degraded. A labeled
   partial beats a dead run.
+- **Status honesty:** the redo-never-skip resume is proven by scripted
+  rehearsal (kill mid-move, cold-process resume); it has NOT yet been observed
+  through a live usage-limit kill. Treat the first one as an experiment and
+  record the outcome in the run's STATE.md note.
 
 ## Thesis ledger (the durable store; makes run N much cheaper than run 1)
 Every target has a LIVING THESIS at `<workspace>/theses/<slug>.md` - a
@@ -79,10 +90,15 @@ questions.
   evidence could ever SETTLE it, not what it is about. A research tool verifies
   what a desk can reach, so a thesis drifts toward confident world-claims and
   assumed customer-claims and reads as validated when nothing about demand has
-  been tested. A customer claim goes `V` **only on a buyer interaction** (a
-  reply, a booked call, a signature, a payment). `ledger.py` stamps
-  `demand-UNVALIDATED` onto the verdict line whenever no customer claim is
-  verified; it is derived on every write, so it cannot be deleted or go stale.
+  been tested. A customer claim goes `V` **only with typed buyer evidence**:
+  the source must be prefixed `buyer:reply|call|signature|payment <detail>`,
+  and the tool REFUSES anything else (a pricing comparable or analyst note is
+  world evidence and cannot clear it). `ledger.py` stamps `demand-UNVALIDATED`
+  onto the verdict line whenever no customer claim carries such evidence;
+  derived on every write, so it cannot be deleted or go stale. Be precise
+  about what this is: **tamper-EVIDENT, not a lie detector** - it enforces
+  that the buyer-contact question is asked in a checkable form; the truth of
+  the evidence is the operator's responsibility.
 - **Run 1 (no thesis yet):** full 4-move sweep, then WRITE the thesis:
   `ledger.py new <slug>`, each finding as a claim (V/A/R + falsifier + source +
   cls; `*` = load-bearing), flip-conditions, open questions, verdict, then
@@ -108,7 +124,7 @@ questions.
   (it warns; `--since <date>` covers a shared folder).
 - **Squeeze every evidence blob** (`squeeze.py`) to load-bearing signal before
   it enters the thesis or passes between moves.
-- **Staleness is surfaced, not just recorded.** `ledger.py stale --dir
+- **Staleness is surfaced, not just recorded.** `python <skill-dir>/tools/ledger.py stale --dir
   <workspace>/theses` lists untested flips, aged load-bearing claims,
   high-blast open questions, and unvalidated demand (exit 1 if any). Wire it
   into a daily brief if you have one. A pre-registered flip nobody ever checks

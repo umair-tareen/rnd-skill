@@ -100,6 +100,25 @@ VALID_CLAIM_CLS = {
 # A customer-class claim goes st='V' only when its source is a BUYER
 # INTERACTION (a reply, a booked call, a signature, a payment). A research
 # comparable is a world-class source and can never verify a customer claim.
+# ENFORCED: to mark a customer claim V, the source must carry a typed
+# evidence tag -- `buyer:reply|call|signature|payment <detail>`. The tool
+# verifies the TAG, not the truth of the detail: it enforces that the
+# question "did a buyer actually settle this?" is asked in a checkable form.
+# The stamp is tamper-EVIDENT, not a lie detector.
+VALID_BUYER_EVIDENCE = {"reply", "call", "signature", "payment"}
+_BUYER_EVIDENCE_RE = re.compile(
+    r"^\s*buyer:(reply|call|signature|payment)\b", re.IGNORECASE)
+
+
+def has_buyer_evidence(source) -> bool:
+    """True if a source string carries the typed buyer-interaction tag."""
+    return bool(_BUYER_EVIDENCE_RE.match(str(source or "")))
+
+
+_V10_MSG = ("V10: a customer claim can only be VERIFIED by a typed buyer "
+            "interaction. Prefix the source with buyer:reply|call|signature|"
+            "payment (e.g. source='buyer:call 3 demos booked 2026-08-01'), "
+            "or keep st='A' until a buyer actually settles it.")
 SECTION_HEADING = {
     "T": "## §T THESIS",
     "C": "## §C CLAIMS",
@@ -284,7 +303,8 @@ def demand_status(doc: dict) -> dict:
     claims = doc.get("claims") or []
     cust = [c for c in claims if (c.get("cls") or "").lower() == "customer"
             and (c.get("st") or "").upper() != "R"]
-    verified = [c for c in cust if (c.get("st") or "").upper() == "V"]
+    verified = [c for c in cust if (c.get("st") or "").upper() == "V"
+                and has_buyer_evidence(c.get("source"))]
     assumed = [c for c in cust if (c.get("st") or "").upper() in ("A", "O")]
     unclassified = [c for c in claims if (c.get("cls") or "-") in ("-", "")
                     and (c.get("st") or "").upper() != "R"]
@@ -498,6 +518,8 @@ def add_claim(path, claim: str, st: str, conf, falsifier: str = "-",
     if not has_source:
         st = "A"
         load_bearing = False
+    if cls == "customer" and st == "V" and not has_buyer_evidence(source):
+        raise ValueError(_V10_MSG)
 
     next_n = 1
     for c in doc["claims"]:
@@ -579,6 +601,9 @@ def set_claim(path, cid, st=None, conf=None, falsifier=None,
     if hit["source"] in (None, "", "-"):   # V2 guard
         hit["st"] = "A"
         hit["load_bearing"] = False
+    if (hit.get("cls") == "customer" and hit["st"] == "V"
+            and not has_buyer_evidence(hit["source"])):   # V10 guard
+        raise ValueError(_V10_MSG)
     _write(path, doc)
     return True
 
@@ -790,6 +815,124 @@ def _cli_show(args) -> int:
     return 0
 
 
+def _cli_add_claim(args) -> int:
+    cid = add_claim(args.path, args.claim, args.st, args.conf,
+                    falsifier=args.falsifier or "-", source=args.source or "-",
+                    load_bearing=bool(args.load_bearing), cls=args.cls or "-",
+                    seen=args.seen)
+    print(f"added {cid}")
+    applied = next(c for c in parse(args.path)["claims"]
+                   if c["id"] == cid.rstrip("*"))
+    if (args.st or "").upper() != applied["st"] or (bool(args.load_bearing)
+                                                     and not applied["load_bearing"]):
+        print("note: V2 guard applied -- no source, so stored as ASSUMED and "
+              "not load-bearing")
+    return 0
+
+
+def _cli_set_claim(args) -> int:
+    ok = set_claim(args.path, args.cid, st=args.st, conf=args.conf,
+                   falsifier=args.falsifier, source=args.source,
+                   claim=args.claim, cls=args.cls,
+                   load_bearing=args.load_bearing)
+    print(f"revised {args.cid}" if ok else f"NOT FOUND: {args.cid}")
+    return 0 if ok else 1
+
+
+def _cli_set_open(args) -> int:
+    ok = set_open(args.path, args.qid, st=args.st, question=args.question,
+                  blast=args.blast, cites=args.cites, closed_by=args.closed_by)
+    print(f"updated {args.qid}" if ok else f"NOT FOUND: {args.qid}")
+    return 0 if ok else 1
+
+
+def _cli_set_flip(args) -> int:
+    ok = set_flip(args.path, args.fid, last_checked=args.last_checked,
+                  holds=args.holds, condition=args.condition)
+    print(f"stamped {args.fid}" if ok else f"NOT FOUND: {args.fid}")
+    return 0 if ok else 1
+
+
+def _cli_set_verdict(args) -> int:
+    set_verdict(args.path, args.verdict, args.conf, args.run, args.date,
+                args.one_line)
+    print("verdict set")
+    return 0
+
+
+def _cli_append_diff(args) -> int:
+    append_diff(args.path, args.run, args.date, args.delta, args.verdict,
+                args.cost)
+    print(f"appended run {args.run}")
+    return 0
+
+
+def _cli_compact(args) -> int:
+    print(compact(args.path))
+    return 0
+
+
+def _cli_demo(args) -> int:
+    """The 30-second self-demonstration: scaffold a thesis, show the derived
+    demand stamp, tamper with it by hand, watch one mutation put it back,
+    try to clear it with free text (refused), clear it with typed buyer
+    evidence. This is the product's central claim, executed live."""
+    import shutil as _sh
+    own_dir = args.dir is None
+    d = Path(tempfile.mkdtemp(prefix="rnd_demo_")) if own_dir else Path(args.dir)
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / "demo-thesis.md"
+
+    def verdict_line():
+        return next(l for l in p.read_text(encoding="utf-8").splitlines()
+                    if l.startswith("verdict:"))
+
+    try:
+        print("1. scaffold a thesis, add a desk-verified claim and a customer claim:")
+        _atomic_write(p, new("demo", "Demo: a paid changelog tool"))
+        add_claim(p, "rivals bundle the feature free", "V", 0.8,
+                  falsifier="a paying user cites no free rival",
+                  source="example.com/pricing", load_bearing=True, cls="world")
+        add_claim(p, "small dev teams will pay us for it", "A", 0.3,
+                  falsifier="0 of 5 warm intros convert", cls="customer")
+        print(f"   {verdict_line()}")
+
+        print("\n2. tamper: hand-delete the stamp from the file on disk...")
+        stripped = "\n".join(
+            (l.split(" \u00b7 \u26a0 ")[0] if l.startswith("verdict:") else l)
+            for l in p.read_text(encoding="utf-8").splitlines())
+        _atomic_write(p, stripped + "\n")
+        print(f"   {verdict_line()}")
+
+        print("\n3. any mutation re-derives it -- the stamp is not stored, so it")
+        print("   cannot stay deleted:")
+        set_claim(p, "C1", conf=0.85)
+        print(f"   {verdict_line()}")
+
+        print("\n4. try to clear it with free text (a press release, a comparable):")
+        try:
+            set_claim(p, "C2", st="V", source="pricing comparable, analyst note")
+            print("   BUG: free text cleared the stamp")
+            return 1
+        except ValueError:
+            print("   REFUSED (V10): only a typed buyer interaction can verify a")
+            print("   customer claim -- buyer:reply|call|signature|payment")
+
+        print("\n5. clear it with typed buyer evidence:")
+        set_claim(p, "C2", st="V", source="buyer:call 2 teams booked a pilot")
+        print(f"   {verdict_line()}")
+
+        print("\nWhat this enforces: the buyer-contact question is ASKED, in a")
+        print("checkable form, on every write. The truth of the evidence is the")
+        print("operator's -- the tool is tamper-evident, not a lie detector.")
+        if not own_dir:
+            print(f"\nthesis left at: {p}")
+        return 0
+    finally:
+        if own_dir:
+            _sh.rmtree(d, ignore_errors=True)
+
+
 def _cli_stale(args) -> int:
     """Exit 1 when anything needs attention, so a scheduled brief can gate on it."""
     if args.dir:
@@ -937,8 +1080,21 @@ def _selftest() -> None:
         assert "demand-UNVALIDATED" in path.read_text(encoding="utf-8"), \
             "V10 flag must be recomputed on write, not stored"
 
-        # a buyer-sourced customer claim clears the warning
-        set_claim(path, "C5", st="V", source="3 booked walkthroughs 2026-07-30")
+        # V10 typed evidence: free text can NOT verify a customer claim...
+        try:
+            set_claim(path, "C5", st="V", source="3 booked walkthroughs 2026-07-30")
+            raise AssertionError("V10: free-text source must not verify a customer claim")
+        except ValueError:
+            pass
+        try:
+            add_claim(path, "another buyer claim", st="V", conf=0.6,
+                      source="press release", cls="customer")
+            raise AssertionError("V10 must guard add_claim too")
+        except ValueError:
+            pass
+        # ...a TYPED buyer interaction does
+        set_claim(path, "C5", st="V",
+                  source="buyer:call 3 booked walkthroughs 2026-07-30")
         ds = demand_status(parse(path))
         assert ds["verified"] == 1 and ds["unvalidated"] is False and ds["flag"] is None, ds
         set_claim(path, "C5", st="A", source="-")      # put it back for later asserts
@@ -1002,7 +1158,7 @@ def _selftest() -> None:
         for c in qdoc["claims"]:
             c["seen"] = "2026-07-24"
             if c["cls"] == "customer":
-                c["st"], c["source"] = "V", "3 booked walkthroughs"
+                c["st"], c["source"] = "V", "buyer:call 3 booked walkthroughs"
         _write(path, qdoc)
         quiet = stale_report(parse(path), days=7, today="2026-07-24")
         assert quiet["any"] is False, quiet
@@ -1053,6 +1209,77 @@ def main() -> int:
     p_show = sub.add_parser("show", help="parse a thesis file, print a summary")
     p_show.add_argument("path")
     p_show.set_defaults(func=_cli_show)
+
+    p_add = sub.add_parser("add-claim", help="append a claim")
+    p_add.add_argument("path")
+    p_add.add_argument("claim")
+    p_add.add_argument("--st", required=True, help="V/A/R/O")
+    p_add.add_argument("--conf", type=float, default=None)
+    p_add.add_argument("--falsifier", default=None)
+    p_add.add_argument("--source", default=None)
+    p_add.add_argument("--cls", default=None, help="world/customer/internal")
+    p_add.add_argument("--load-bearing", action="store_true")
+    p_add.add_argument("--seen", default=None)
+    p_add.set_defaults(func=_cli_add_claim)
+
+    p_setc = sub.add_parser("set-claim", help="revise a claim (only passed fields change)")
+    p_setc.add_argument("path")
+    p_setc.add_argument("cid")
+    p_setc.add_argument("--st", default=None)
+    p_setc.add_argument("--conf", type=float, default=None)
+    p_setc.add_argument("--falsifier", default=None)
+    p_setc.add_argument("--source", default=None)
+    p_setc.add_argument("--claim", default=None)
+    p_setc.add_argument("--cls", default=None)
+    p_setc.add_argument("--load-bearing", action=argparse.BooleanOptionalAction,
+                        default=None)
+    p_setc.set_defaults(func=_cli_set_claim)
+
+    p_seto = sub.add_parser("set-open", help="update an open question")
+    p_seto.add_argument("path")
+    p_seto.add_argument("qid")
+    p_seto.add_argument("--st", default=None, help="'.'/'~'/'x'")
+    p_seto.add_argument("--question", default=None)
+    p_seto.add_argument("--blast", default=None)
+    p_seto.add_argument("--cites", default=None)
+    p_seto.add_argument("--closed-by", default=None,
+                        help="claim id that answered it (ALWAYS set when st=x)")
+    p_seto.set_defaults(func=_cli_set_open)
+
+    p_setf = sub.add_parser("set-flip", help="stamp a flip re-check")
+    p_setf.add_argument("path")
+    p_setf.add_argument("fid")
+    p_setf.add_argument("--last-checked", default=None)
+    p_setf.add_argument("--holds", default=None, help="y/n/untested")
+    p_setf.add_argument("--condition", default=None)
+    p_setf.set_defaults(func=_cli_set_flip)
+
+    p_setv = sub.add_parser("set-verdict", help="rewrite the verdict")
+    p_setv.add_argument("path")
+    p_setv.add_argument("verdict", help="go/reshape/no-go")
+    p_setv.add_argument("--conf", type=float, required=True)
+    p_setv.add_argument("--run", type=int, required=True)
+    p_setv.add_argument("--date", required=True)
+    p_setv.add_argument("--one-line", required=True)
+    p_setv.set_defaults(func=_cli_set_verdict)
+
+    p_diff = sub.add_parser("append-diff", help="append one run row to the diff log")
+    p_diff.add_argument("path")
+    p_diff.add_argument("--run", type=int, required=True)
+    p_diff.add_argument("--date", required=True)
+    p_diff.add_argument("--delta", required=True)
+    p_diff.add_argument("--verdict", required=True)
+    p_diff.add_argument("--cost", required=True)
+    p_diff.set_defaults(func=_cli_append_diff)
+
+    p_comp = sub.add_parser("compact", help="enforce the 500-line one-file rule")
+    p_comp.add_argument("path")
+    p_comp.set_defaults(func=_cli_compact)
+
+    p_demo = sub.add_parser("demo", help="30-second live demo of the demand stamp")
+    p_demo.add_argument("--dir", default=None,
+                        help="write the demo thesis here instead of a temp dir")
+    p_demo.set_defaults(func=_cli_demo)
 
     p_stale = sub.add_parser(
         "stale", help="what has gone unexamined (untested flips, aged load-bearing "

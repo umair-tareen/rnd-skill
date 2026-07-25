@@ -81,11 +81,13 @@ def cost_usd(tokens: int, model: str) -> float:
 
 
 def format_cost(tokens: int, model: str) -> str:
-    """Dollar string, ai-trim's formatCost: 4dp under a cent, else 2dp."""
+    """Estimate string. Deliberately imprecise: the underlying number is a
+    chars/4 proxy times a blended input rate, so four decimal places would be
+    false precision wearing a currency sign."""
     cost = cost_usd(tokens, model)
     if cost < 0.01:
-        return f"${cost:.4f}"
-    return f"${cost:.2f}"
+        return "<$0.01 est."
+    return f"~${cost:.2f} est."
 
 
 def format_tokens(n: int) -> str:
@@ -130,6 +132,10 @@ def _mtime_date(path: Path) -> str:
 
 def measure_run(run_folder, thesis_file=None, model: str = "opus", since=None) -> dict:
     """Measure ONE /rnd run's token + $ cost, split fixed vs marginal.
+
+    UNIT: written-artifact tokens (chars/4) -- what the run WROTE, a size
+    proxy. It does not observe API calls, subagent context, fetches, or
+    reasoning tokens. Honest as a floor and a trend, wrong as a bill.
 
     fixed (always-loaded)  = thesis_file, if given -- the ledger re-read
                               that happens EVERY run regardless of what's new.
@@ -461,6 +467,9 @@ def render_meter(measurement: dict, diff_rows=None) -> str:
     total = measurement["total"]
 
     lines = ["\xa7M METER", ""]
+    lines.append("unit: written-artifact tokens (chars/4) -- a size PROXY for "
+                 "what the run wrote, NOT API spend")
+    lines.append(""),
     lines.append(
         f"fixed (always-loaded, ledger re-read): "
         f"{format_tokens(fixed['tokens'])} tok / {format_cost(fixed['tokens'], model)} ({model})"
@@ -493,7 +502,7 @@ def render_meter(measurement: dict, diff_rows=None) -> str:
             pct_of_run1 = (total["tokens"] / run1_tokens) * 100
             reduction = 100 - pct_of_run1
             sign = "-" if reduction >= 0 else "+"
-            run1_usd = f" / ${run1['cost_usd']:.2f}" if run1["cost_usd"] is not None else ""
+            run1_usd = (f" / ~${run1['cost_usd']:.2f} est." if run1["cost_usd"] is not None else "")
             lines.append(f"run1 (baseline): {format_tokens(run1_tokens)} tok{run1_usd}")
             lines.append(
                 f"this run:        {format_tokens(total['tokens'])} tok / "
@@ -532,6 +541,12 @@ def main() -> int:
                           "marginal cost (use when a recheck run shares an earlier "
                           "run's folder; earlier files are reported as excluded)")
     args = ap.parse_args()
+
+    if not Path(args.run_folder).exists():
+        print(f"ERROR: run folder does not exist: {args.run_folder}", file=sys.stderr)
+        print("A missing measurement subject must not produce a confident meter.",
+              file=sys.stderr)
+        return 2
 
     measurement = measure_run(args.run_folder, args.thesis, args.model, since=args.since)
 
