@@ -136,18 +136,32 @@ resume, which is the worst available failure because it is invisible.
 
 ## Prior art, and what is actually new here
 
-The living-claim-ledger idea has independent academic convergence:
-**ResearchLoop** ("ResearchLoop: An Evidence-Gated Control Plane for
-AI-Assisted Research", [arXiv:2605.28282](https://arxiv.org/abs/2605.28282))
-treats claim ledgers and evidence objects as durable project state across
-iterations - read it. The buyer-contact epistemic is older still: it is
-lean-startup discipline, practiced at scale by product-discovery platforms.
-What we did not find anywhere, and claim as this repo's contribution: the
-**derived, non-storable demand stamp** on the verdict line of an agent's own
-research output, **typed buyer evidence** as a write-time refusal, and a cost
-meter that **prints yield beside cost** (observability tools stop at evals).
-If you find prior art for any of those three, open an issue - this repo's
-whole premise is that being corrected early is the win.
+The living-claim-ledger idea has independent academic convergence, and we
+went looking for it on purpose (full cited landscape, maintained as a living
+thesis with these very tools: [`research/landscape.md`](research/landscape.md)):
+
+- **ResearchLoop** ([arXiv:2605.28282](https://arxiv.org/abs/2605.28282))
+  treats claim ledgers and evidence objects as durable project state - the
+  closest published system. Its schema has no pre-registered falsifier field
+  and claims are not re-validated across runs.
+- **EviBound** ([arXiv:2511.05524](https://arxiv.org/abs/2511.05524)) gates
+  agent claims behind machine-verifiable typed evidence - the same refusal
+  pattern as our `buyer:` tag, applied to execution artifacts rather than
+  demand.
+- **POPPER** ([snap-stanford/POPPER](https://github.com/snap-stanford/POPPER))
+  runs agent-designed falsification experiments with statistical error
+  control - single-run, no persistent ledger.
+- **HDSO** ([arXiv:2606.22330](https://arxiv.org/abs/2606.22330)) curates
+  falsifiable hypotheses with validation plans, for embodied agent skills.
+
+The buyer-contact epistemic is older still: lean-startup discipline,
+practiced at scale by product-discovery platforms. What we did not find
+anywhere, and claim as this repo's contribution: **cross-run re-check of
+pre-registered falsifiers in a shipped tool**, the **derived, non-storable
+demand stamp** on the verdict line, **typed buyer evidence** as a write-time
+refusal, and a cost meter that **prints yield beside cost**. If you find
+prior art for any of these, open an issue - this repo's whole premise is that
+being corrected early is the win.
 
 ## The bug log is the point
 
