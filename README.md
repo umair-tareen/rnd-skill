@@ -1,5 +1,7 @@
 # rnd-skill
 
+![rnd-skill: a living thesis ledger for AI research](.github/banner.svg)
+
 A Claude Code skill + toolkit that turns one-shot AI research into a **living,
 falsifiable thesis** whose cost curves DOWN over time, and that is built to be
 honest about the three ways AI research quietly lies to you.
