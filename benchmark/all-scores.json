@@ -1,0 +1,446 @@
+[
+  {
+    "output": "outputs/d1-baseline.md",
+    "mode": "baseline",
+    "product": "Veltrix",
+    "claims_parsed": 15,
+    "format_failures": 0,
+    "artifact_tokens": 865,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": true,
+        "detail": "VERIFIED: TechWire's launch coverage reported that Veltrix processes 2.4M reques"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: A vendor-run survey (Panel-K87, n=214, self-selected respondents recru"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 2,
+    "dossier": "d1"
+  },
+  {
+    "output": "outputs/d1-ledger.md",
+    "mode": "ledger",
+    "product": "Veltrix",
+    "claims_parsed": 11,
+    "format_failures": 0,
+    "artifact_tokens": 777,
+    "demand_warning_on_verdict": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey Panel-K87 (n=214) was self-selected from the vendor own mailing"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d1"
+  },
+  {
+    "output": "outputs/d2-baseline.md",
+    "mode": "baseline",
+    "product": "Orvana",
+    "claims_parsed": 14,
+    "format_failures": 0,
+    "artifact_tokens": 796,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey Pulse-D3 (n=214, self-selected respondents recruited from the v"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d2"
+  },
+  {
+    "output": "outputs/d2-ledger.md",
+    "mode": "ledger",
+    "product": "Orvana",
+    "claims_parsed": 10,
+    "format_failures": 0,
+    "artifact_tokens": 824,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": true,
+        "detail": "VERIFIED: TechWire launch coverage reported that Orvana reached 417k daily activ"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey Pulse-D3 of 214 self-selected respondents recruited from Orvana"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 2,
+    "dossier": "d2"
+  },
+  {
+    "output": "outputs/d3-baseline.md",
+    "mode": "baseline",
+    "product": "AgriPod",
+    "claims_parsed": 11,
+    "format_failures": 0,
+    "artifact_tokens": 789,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey FieldPoll-9 (n=214, self-selected respondents recruited from th"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d3"
+  },
+  {
+    "output": "outputs/d3-ledger.md",
+    "mode": "ledger",
+    "product": "AgriPod",
+    "claims_parsed": 11,
+    "format_failures": 0,
+    "artifact_tokens": 713,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: FieldPoll-9 sampled 214 self selected respondents recruited from the v"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d3"
+  },
+  {
+    "output": "outputs/d4-baseline.md",
+    "mode": "baseline",
+    "product": "Casterly",
+    "claims_parsed": 0,
+    "format_failures": 14,
+    "artifact_tokens": 787,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": true,
+        "detail": "missing entirely"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d4"
+  },
+  {
+    "output": "outputs/d4-ledger.md",
+    "mode": "ledger",
+    "product": "Casterly",
+    "claims_parsed": 10,
+    "format_failures": 0,
+    "artifact_tokens": 837,
+    "demand_warning_on_verdict": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey MicSurvey-12 (n=214, self-selected respondents recruited from t"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d4"
+  },
+  {
+    "output": "outputs/d5-baseline.md",
+    "mode": "baseline",
+    "product": "Invexo",
+    "claims_parsed": 16,
+    "format_failures": 0,
+    "artifact_tokens": 803,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey FinPanel-4 (n=214, self-selected respondents recruited from the"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d5"
+  },
+  {
+    "output": "outputs/d5-ledger.md",
+    "mode": "ledger",
+    "product": "Invexo",
+    "claims_parsed": 9,
+    "format_failures": 0,
+    "artifact_tokens": 761,
+    "demand_warning_on_verdict": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey FinPanel-4, n=214 self-selected respondents recruited from the "
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d5"
+  },
+  {
+    "output": "outputs/d6-baseline.md",
+    "mode": "baseline",
+    "product": "Printhaven",
+    "claims_parsed": 13,
+    "format_failures": 0,
+    "artifact_tokens": 767,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": true,
+        "detail": "VERIFIED: TechWire's launch coverage reported Printhaven hosts 11,400 active sel"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: MakerPoll-6 (n=214, self-selected respondents recruited from the vendo"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 2,
+    "dossier": "d6"
+  },
+  {
+    "output": "outputs/d6-ledger.md",
+    "mode": "ledger",
+    "product": "Printhaven",
+    "claims_parsed": 10,
+    "format_failures": 0,
+    "artifact_tokens": 759,
+    "demand_warning_on_verdict": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": true,
+        "detail": "VERIFIED: Survey MakerPoll-6 of 214 self-selected respondents recruited from the"
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-"
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-"
+      }
+    ],
+    "errors": 1,
+    "dossier": "d6"
+  }
+]
