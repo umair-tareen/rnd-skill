@@ -12,6 +12,12 @@ single condition that would flip it, and the cheapest test. Then it writes all
 of that into a compact ledger, so the next run re-checks the falsifiers instead
 of re-researching the world.
 
+Two ways in, deliberately decoupled: **the ledger is the primitive** - four
+stdlib tools + an MCP server any agent or human can drive, no methodology
+required. **`/rnd` is one reference consumer** - an opinionated 4-move skill
+built on top. Adopt the primitive without the process; the stamp and the
+meter work the same either way.
+
 ## The three lies this is built against
 
 **1. Re-derivation.** Most AI research is a one-shot report: expensive, then
