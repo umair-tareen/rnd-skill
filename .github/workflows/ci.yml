@@ -1,0 +1,30 @@
+name: self-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: ledger
+        run: python tools/ledger.py selftest
+      - name: squeeze
+        run: python tools/squeeze.py --selftest
+      - name: trim
+        run: python tools/trim.py --self-test
+      - name: state
+        run: python tools/state.py --self-test
