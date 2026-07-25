@@ -975,6 +975,14 @@ def _selftest() -> None:
     try:
         path = tmp_dir / "test-thesis.md"
 
+        # encoding canary: the section sign must be the single codepoint
+        # U+00A7. If source ever gets mojibake'd (e.g. a cp1252/utf-8 round
+        # trip doubling it to 'A-circumflex + section'), REAL files stop
+        # parsing while a corrupted selftest would stay self-consistently
+        # green - this line is what breaks instead.
+        assert SECTION_HEADING["T"] == "## \u00a7T THESIS", SECTION_HEADING["T"]
+        assert _SECTION_RE.pattern.count("\u00a7") == 1
+
         text = new("test-thesis", "Self Test Thesis")
         assert "§T THESIS" in text
         assert "§C CLAIMS" in text
@@ -1303,7 +1311,12 @@ def main() -> int:
     p_test.set_defaults(func=lambda a: (_selftest(), 0)[1])
 
     args = ap.parse_args()
-    return args.func(args)
+    try:
+        return args.func(args)
+    except ValueError as e:
+        # a guard refusal (V2/V10/cls) is an ANSWER, not a crash: say it plainly
+        print(f"REFUSED: {e}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
