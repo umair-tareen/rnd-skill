@@ -197,6 +197,16 @@ have it; it is optional.
   other than the author. Held to this repo's own taxonomy, "others will adopt
   this" is a customer-class claim currently at ASSUMED - it verifies the same
   way every customer claim does: on real buyer contact, not on a README.
+- **Benchmarked, including the part that failed** (`benchmark/`,
+  pre-registered before running, raw outputs committed): the headline
+  hypothesis - that enforcement reduces claim errors versus the same
+  discipline merely requested in a prompt - was NOT supported on our
+  synthetic corpus (H1 FAIL; a well-prompted model was already skeptical).
+  What did measure: outputs that always parse (14 format failures vs 0),
+  a machine-derived demand flag on every ledger verdict vs none, no
+  positive-control drops, zero fabricated buyer evidence, at 0.97x the
+  artifact cost. We cite this as evidence of STRUCTURE, never of error-rate.
+  Full accounting in `benchmark/RESULTS.md`.
 
 ## What's in the box, part 2
 
