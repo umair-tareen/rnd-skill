@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.umair-tareen/rnd",
+  "description": "A living, falsifiable thesis ledger for AI research: cross-run falsifier recheck, yield-beside-cost metering, and a derived demand-UNVALIDATED stamp cleared only by typed, confidence-capped buyer evidence (signup/reply/call/signature/payment ladder). 13 tools sharing one enforcement path with the CLI.",
+  "repository": {
+    "url": "https://github.com/umair-tareen/rnd-skill",
+    "source": "github"
+  },
+  "version_detail": {
+    "version": "0.3.0"
+  },
+  "packages": [
+    {
+      "registry_name": "github",
+      "name": "umair-tareen/rnd-skill",
+      "version": "0.3.0",
+      "runtime_hint": "python",
+      "runtime_arguments": [
+        {
+          "type": "positional",
+          "value": "tools/server.py",
+          "description": "stdio MCP server; requires: pip install mcp"
+        }
+      ]
+    }
+  ]
+}
