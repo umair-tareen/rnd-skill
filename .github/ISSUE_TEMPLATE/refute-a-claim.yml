@@ -1,0 +1,40 @@
+name: Refute a claim
+description: >-
+  This repo makes falsifiable claims (README, SPEC, benchmark results). If
+  you can refute one - prior art we missed, a benchmark flaw, a broken
+  invariant - this is the highest-value contribution you can make. Refuted
+  claims go in the ledger with your issue as the source; they are never
+  silently deleted.
+title: "refute: "
+labels: ["refutation"]
+body:
+  - type: input
+    id: claim
+    attributes:
+      label: The claim you are refuting
+      description: >-
+        Quote it. E.g. "cross-run falsifier recheck is unclaimed by anything
+        shipped", "the demand stamp cannot be cleared without typed
+        evidence", or any §C row in research/landscape.md.
+      placeholder: Quote the exact sentence from the repo.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Your evidence
+      description: >-
+        Links, code, or a reproduction. A refutation with a source
+        outranks any amount of argument. NO URL, no claim - our rule,
+        applied to you too.
+    validations:
+      required: true
+  - type: textarea
+    id: falsifier
+    attributes:
+      label: What would change YOUR mind?
+      description: >-
+        Optional, but this is the house style: state what evidence would
+        make your own refutation wrong.
+    validations:
+      required: false

@@ -60,7 +60,7 @@ is the operator's. See it live in 30 seconds: `python tools/ledger.py demo`.
 
 | file | what it is |
 |---|---|
-| `SKILL.md` | the Claude Code skill: 4 moves (FRAME, EVIDENCE, INTERROGATE, CONCLUDE + independent kill-check), lean by default |
+| `skills/rnd/SKILL.md` | the Claude Code skill: 4 moves (FRAME, EVIDENCE, INTERROGATE, CONCLUDE + independent kill-check), lean by default |
 | `SPEC.md` | the design doc: schema, recheck/diff loop, invariants V1-V13, and the bug log that earned them |
 | `tools/ledger.py` | deterministic thesis bookkeeping: ids, append-only diff log, the no-source guard, the demand stamp, staleness reporting, one-file compaction |
 | `tools/squeeze.py` | typed lossy compression for evidence blobs before they enter context or the ledger |
@@ -76,8 +76,11 @@ self-test. The model supplies judgment; the tools guarantee the mechanics.
 ```bash
 # install the skill (Claude Code) -- the tools ship WITH it, not separately
 mkdir -p ~/.claude/skills/rnd
-cp SKILL.md ~/.claude/skills/rnd/
+cp skills/rnd/SKILL.md ~/.claude/skills/rnd/
 cp -r tools ~/.claude/skills/rnd/tools
+
+# (the repo is also a valid Claude Code plugin: .claude-plugin/plugin.json
+#  passes `claude plugin validate --strict`; directory submission pending)
 
 # the 30-second proof: the demand stamp, tampered with and restored, live
 python tools/ledger.py demo
