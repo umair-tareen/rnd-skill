@@ -1,5 +1,7 @@
 # rnd-skill
 
+[![self-tests](https://github.com/umair-tareen/rnd-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/umair-tareen/rnd-skill/actions/workflows/ci.yml)
+
 ![rnd-skill: a living thesis ledger for AI research](.github/banner.svg)
 
 ![The demand stamp, live: tampered, restored, refusing free text, cleared only by typed buyer evidence](.github/demo.gif)
@@ -202,22 +204,25 @@ have it; it is optional.
   other than the author. Held to this repo's own taxonomy, "others will adopt
   this" is a customer-class claim currently at ASSUMED - it verifies the same
   way every customer claim does: on real buyer contact, not on a README.
-- **Benchmarked twice, both nulls published** (`benchmark/`, pre-registered
-  before each run, raw outputs committed). v1: enforcement did not beat the
-  same discipline requested in a prompt. v2 added the realistic baseline -
-  someone who just asks "read these files and tell me if this is worth it" -
-  and the headline failed again, for a reason worth knowing: **the unprompted
-  model never fell for the demand trap.** Six runs, a vendor-run survey of
-  214 self-selected respondents, and every one called it what it was. On this
-  corpus, with this model, AI research does not launder desk evidence into
-  validated demand - so the stamp's value is that the skepticism becomes a
-  machine-readable field (6/6 vs 0/6), not that it creates the skepticism.
-  What did separate the arms: **format failures 213 (plain prose) / 14
-  (vocabulary only) / 0 (ledger)**, the retracted fact (ledger 0, unprompted
-  2), and the ledger arm was the cheapest of the three. We cite this as
-  evidence of STRUCTURE, never of error-rate. Both scorers ship, including
-  the one whose defect we found and disclosed rather than patched.
-  `benchmark/RESULTS.md` and `benchmark/RESULTS-v2.md`.
+- **Benchmarked three times, three headline nulls, all published**
+  (`benchmark/`, each pre-registered before running, all raw outputs
+  committed). v1: enforcement did not beat requested discipline. v2: the
+  realistic unprompted baseline never fell for the demand trap - a modern
+  model is already skeptical in the moment. v3 finally tested the axis only
+  this tool can run - **the world changes between runs; does the assessment
+  change with it?** - and the headline metric was destroyed by our own
+  scorer (it punished well-cited assertions; disclosed, not retuned). What
+  survived all three rounds of trying to kill it, measured every time:
+  **structure** (0 ledger format failures across all rounds vs 213+14 for
+  prose; 6/6 theses still machine-parseable after updates), **cost**
+  (ledger recheck = 0.54x a prose rewrite, and prose updates grew ~70%
+  per cycle - re-narration is O(history), recheck is O(delta)), and
+  **guard integrity** (6/6 demand stamps cleared via legitimate
+  buyer:signature evidence when it finally existed; zero fabricated
+  evidence across 24 adversarial opportunities). So the claim this repo
+  makes is exactly what was measured and nothing more: **the tool makes
+  research output durable, auditable, and cheap to keep current - not
+  smarter.** `benchmark/RESULTS.md`, `RESULTS-v2.md`, `RESULTS-v3-drift.md`.
 
 ## What's in the box, part 2
 
