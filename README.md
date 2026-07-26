@@ -199,16 +199,22 @@ have it; it is optional.
   other than the author. Held to this repo's own taxonomy, "others will adopt
   this" is a customer-class claim currently at ASSUMED - it verifies the same
   way every customer claim does: on real buyer contact, not on a README.
-- **Benchmarked, including the part that failed** (`benchmark/`,
-  pre-registered before running, raw outputs committed): the headline
-  hypothesis - that enforcement reduces claim errors versus the same
-  discipline merely requested in a prompt - was NOT supported on our
-  synthetic corpus (H1 FAIL; a well-prompted model was already skeptical).
-  What did measure: outputs that always parse (14 format failures vs 0),
-  a machine-derived demand flag on every ledger verdict vs none, no
-  positive-control drops, zero fabricated buyer evidence, at 0.97x the
-  artifact cost. We cite this as evidence of STRUCTURE, never of error-rate.
-  Full accounting in `benchmark/RESULTS.md`.
+- **Benchmarked twice, both nulls published** (`benchmark/`, pre-registered
+  before each run, raw outputs committed). v1: enforcement did not beat the
+  same discipline requested in a prompt. v2 added the realistic baseline -
+  someone who just asks "read these files and tell me if this is worth it" -
+  and the headline failed again, for a reason worth knowing: **the unprompted
+  model never fell for the demand trap.** Six runs, a vendor-run survey of
+  214 self-selected respondents, and every one called it what it was. On this
+  corpus, with this model, AI research does not launder desk evidence into
+  validated demand - so the stamp's value is that the skepticism becomes a
+  machine-readable field (6/6 vs 0/6), not that it creates the skepticism.
+  What did separate the arms: **format failures 213 (plain prose) / 14
+  (vocabulary only) / 0 (ledger)**, the retracted fact (ledger 0, unprompted
+  2), and the ledger arm was the cheapest of the three. We cite this as
+  evidence of STRUCTURE, never of error-rate. Both scorers ship, including
+  the one whose defect we found and disclosed rather than patched.
+  `benchmark/RESULTS.md` and `benchmark/RESULTS-v2.md`.
 
 ## What's in the box, part 2
 
