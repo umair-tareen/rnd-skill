@@ -192,6 +192,12 @@ failure, because it is invisible. `init` on an existing run PRESERVES it
 - V13: an untested §F flip ! SURFACE (`ledger.py stale`, wired into a daily
   brief if you have one). Recording ≠ surfacing; a ledger nobody reads is a
   ledger that changes nothing.
+- V14: the suite ! parse at least one COMMITTED artifact the run did NOT
+  create (`tools/test_fixture.py` over `examples/acme`, in CI). A self-test
+  that round-trips through its own writer is blind to writer+reader
+  corruption - it stays green while every real file breaks (B6). ⊥ let this
+  rule live in prose: that mistake is B1, B4, and B6's own lesson, three
+  times over.
 
 ## §B BUGS (backprop log from the first live deployment; append a row when a
 run breaks an invariant. Kept because every invariant above was EARNED.)

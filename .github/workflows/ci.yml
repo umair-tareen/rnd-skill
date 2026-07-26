@@ -28,6 +28,8 @@ jobs:
         run: python tools/trim.py --self-test
       - name: state
         run: python tools/state.py --self-test
+      - name: fixture (parse a COMMITTED artifact this run did not create -- SPEC B6)
+        run: python tools/test_fixture.py
       - name: demo (the stamp, live)
         run: python tools/ledger.py demo
       - name: mcp server (stdio handshake + enforcement paths)
