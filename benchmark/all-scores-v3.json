@@ -1,0 +1,812 @@
+[
+  {
+    "output": "outputs/d1-weak.md",
+    "arm": "weak",
+    "product": "Veltrix",
+    "units": 28,
+    "format_failures": 28,
+    "artifact_tokens": 934,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d1"
+  },
+  {
+    "output": "outputs/d1-baseline.md",
+    "arm": "strong",
+    "product": "Veltrix",
+    "units": 15,
+    "format_failures": 0,
+    "artifact_tokens": 865,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 3,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d1"
+  },
+  {
+    "output": "outputs/d1-ledger.md",
+    "arm": "ledger",
+    "product": "Veltrix",
+    "units": 11,
+    "format_failures": 0,
+    "artifact_tokens": 777,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d1"
+  },
+  {
+    "output": "outputs/d2-weak.md",
+    "arm": "weak",
+    "product": "Orvana",
+    "units": 35,
+    "format_failures": 35,
+    "artifact_tokens": 1258,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d2"
+  },
+  {
+    "output": "outputs/d2-baseline.md",
+    "arm": "strong",
+    "product": "Orvana",
+    "units": 14,
+    "format_failures": 0,
+    "artifact_tokens": 796,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 1
+      }
+    ],
+    "errors": 0,
+    "dossier": "d2"
+  },
+  {
+    "output": "outputs/d2-ledger.md",
+    "arm": "ledger",
+    "product": "Orvana",
+    "units": 10,
+    "format_failures": 0,
+    "artifact_tokens": 824,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 3,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d2"
+  },
+  {
+    "output": "outputs/d3-weak.md",
+    "arm": "weak",
+    "product": "AgriPod",
+    "units": 35,
+    "format_failures": 35,
+    "artifact_tokens": 1043,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": true,
+        "detail": "OBJECT assertion: The performance/scale figure in circulation (61-month battery life) This is the central re",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 3,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      }
+    ],
+    "errors": 1,
+    "dossier": "d3"
+  },
+  {
+    "output": "outputs/d3-baseline.md",
+    "arm": "strong",
+    "product": "AgriPod",
+    "units": 11,
+    "format_failures": 0,
+    "artifact_tokens": 789,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d3"
+  },
+  {
+    "output": "outputs/d3-ledger.md",
+    "arm": "ledger",
+    "product": "AgriPod",
+    "units": 11,
+    "format_failures": 0,
+    "artifact_tokens": 713,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 3,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d3"
+  },
+  {
+    "output": "outputs/d4-weak.md",
+    "arm": "weak",
+    "product": "Casterly",
+    "units": 42,
+    "format_failures": 42,
+    "artifact_tokens": 1307,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 3,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d4"
+  },
+  {
+    "output": "outputs/d4-baseline.md",
+    "arm": "strong",
+    "product": "Casterly",
+    "units": 0,
+    "format_failures": 14,
+    "artifact_tokens": 787,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": true,
+        "detail": "missing entirely",
+        "hits": 0,
+        "object_hits": 0
+      }
+    ],
+    "errors": 1,
+    "dossier": "d4"
+  },
+  {
+    "output": "outputs/d4-ledger.md",
+    "arm": "ledger",
+    "product": "Casterly",
+    "units": 10,
+    "format_failures": 0,
+    "artifact_tokens": 837,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d4"
+  },
+  {
+    "output": "outputs/d5-weak.md",
+    "arm": "weak",
+    "product": "Invexo",
+    "units": 37,
+    "format_failures": 37,
+    "artifact_tokens": 1193,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 1
+      }
+    ],
+    "errors": 0,
+    "dossier": "d5"
+  },
+  {
+    "output": "outputs/d5-baseline.md",
+    "arm": "strong",
+    "product": "Invexo",
+    "units": 16,
+    "format_failures": 0,
+    "artifact_tokens": 803,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": true,
+        "detail": "OBJECT assertion: The 94-second reconcile figure is accurate/valid performance data for Invexo (source: 03-t",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      }
+    ],
+    "errors": 1,
+    "dossier": "d5"
+  },
+  {
+    "output": "outputs/d5-ledger.md",
+    "arm": "ledger",
+    "product": "Invexo",
+    "units": 9,
+    "format_failures": 0,
+    "artifact_tokens": 761,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d5"
+  },
+  {
+    "output": "outputs/d6-weak.md",
+    "arm": "weak",
+    "product": "Printhaven",
+    "units": 36,
+    "format_failures": 36,
+    "artifact_tokens": 1109,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": true,
+        "detail": "OBJECT assertion: The performance/scale figure in circulation (11,400 active sellers) This is the load-beari",
+        "hits": 2,
+        "object_hits": 1
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 1,
+    "dossier": "d6"
+  },
+  {
+    "output": "outputs/d6-baseline.md",
+    "arm": "strong",
+    "product": "Printhaven",
+    "units": 13,
+    "format_failures": 0,
+    "artifact_tokens": 767,
+    "demand_warning": false,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 1
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d6"
+  },
+  {
+    "output": "outputs/d6-ledger.md",
+    "arm": "ledger",
+    "product": "Printhaven",
+    "units": 10,
+    "format_failures": 0,
+    "artifact_tokens": 759,
+    "demand_warning": true,
+    "traps": [
+      {
+        "id": "T1",
+        "type": "retracted-fact",
+        "error": false,
+        "detail": "-",
+        "hits": 0,
+        "object_hits": 0
+      },
+      {
+        "id": "T2",
+        "type": "demand-trap",
+        "error": false,
+        "detail": "-",
+        "hits": 2,
+        "object_hits": 0
+      },
+      {
+        "id": "T3",
+        "type": "unknowable",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      },
+      {
+        "id": "T4",
+        "type": "positive-control",
+        "error": false,
+        "detail": "-",
+        "hits": 1,
+        "object_hits": 0
+      }
+    ],
+    "errors": 0,
+    "dossier": "d6"
+  }
+]
