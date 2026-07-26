@@ -183,6 +183,40 @@ evidence and naming what would falsify it:
   skill (independent critics + a judge that is not one of them), swap the
   single kill-check for it. Everything else is identical.
 
+## Move 5 - SMOKE-TEST DESIGN (the demand experiment; research cannot finish this)
+Every verdict on a product/service bet ends with a DESIGNED demand experiment,
+not a vague "talk to customers." Three rounds of published benchmarks say a
+model is already skeptical at a desk; what no desk produces is buyer evidence.
+Design the cheapest experiment that produces a TYPED rung on the evidence
+ladder, with the bar PRE-REGISTERED into the thesis before the experiment
+runs (as a §F flip: "result >= bar -> go").
+
+The evidence ladder (tool-enforced confidence caps - a waitlist is real
+signal, not a signed order):
+```
+buyer:signup     cap 0.40   waitlist joins, preorder intent, ad CPL
+buyer:reply      cap 0.50   a prospect replied with genuine interest
+buyer:call       cap 0.65   a booked AND held discovery/demo call
+buyer:signature  cap 0.85   signed pilot / LOI / contract
+buyer:payment    cap 0.95   money moved
+```
+Canonical plays, cheapest first (pick ONE, name its bar, register the flip):
+- **Landing page + waitlist + small paid traffic** (Carrd/Framer + Meta/
+  Google ads): pre-register CPL ceiling and signup count BEFORE launch
+  (e.g. "CPL < $3 and >= 50 signups in 14 days -> buyer:signup evidence,
+  conf <= 0.40"). Cheap, fast, weakest rung - it validates INTEREST, not
+  purchase.
+- **Direct outreach** (5-10 warm/targeted contacts, one ask): replies feed
+  buyer:reply; held calls feed buyer:call.
+- **Preorder / paid pilot page**: an actual checkout or signed LOI feeds
+  buyer:signature / buyer:payment - the only rungs that validate PRICE.
+Rules: the bar is written into the thesis BEFORE the experiment starts (V3
+pre-registration applies to demand tests, not just falsifiers); results
+enter via `add-claim`/`set-claim` with the honest tier tag; the tool clamps
+confidence to the tier cap, so a hot waitlist can never masquerade as
+proven revenue. Only rung-appropriate conclusions: signup evidence upgrades
+"will anyone care", never "will anyone pay".
+
 ## Deliver + record
 - Present tightly: verdict, the biggest concern, what you're missing, the
   flip-condition, the cheapest test. Point at the run folder for the rest.

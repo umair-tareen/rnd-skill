@@ -104,14 +104,47 @@ VALID_CLAIM_CLS = {"world", "customer", "internal"}
 # verifies the TAG, not the truth of the detail: it enforces that the
 # question "did a buyer actually settle this?" is asked in a checkable form.
 # The stamp is tamper-EVIDENT, not a lie detector.
-VALID_BUYER_EVIDENCE = {"reply", "call", "signature", "payment"}
+# V15 -- the evidence LADDER: each tier carries a tool-enforced confidence
+# CAP for customer claims. A waitlist signup is real buyer signal, but it is
+# not a signed order; the cap keeps weak signal from laundering into strong.
+BUYER_EVIDENCE_CAPS = {
+    "signup": 0.40,      # waitlist join, preorder intent, ad-driven CPL
+    "reply": 0.50,       # a prospect replied with genuine interest
+    "call": 0.65,        # a booked AND held discovery/demo call
+    "signature": 0.85,   # signed pilot / LOI / contract
+    "payment": 0.95,     # money moved
+}
+VALID_BUYER_EVIDENCE = set(BUYER_EVIDENCE_CAPS)
 _BUYER_EVIDENCE_RE = re.compile(
-    r"^\s*buyer:(reply|call|signature|payment)\b", re.IGNORECASE)
+    r"^\s*buyer:(signup|reply|call|signature|payment)\b", re.IGNORECASE)
 
 
 def has_buyer_evidence(source) -> bool:
     """True if a source string carries the typed buyer-interaction tag."""
     return bool(_BUYER_EVIDENCE_RE.match(str(source or "")))
+
+
+def buyer_evidence_tier(source):
+    """The ladder tier named in a buyer: tag, or None."""
+    m = _BUYER_EVIDENCE_RE.match(str(source or ""))
+    return m.group(1).lower() if m else None
+
+
+def _clamp_customer_conf(claim_dict) -> bool:
+    """V15: cap a customer claim's confidence at its evidence tier's
+    ceiling. Returns True if a clamp happened (callers report it loudly -
+    a silent clamp would be a prose rule wearing a code costume)."""
+    if (claim_dict.get("cls") != "customer"
+            or (claim_dict.get("st") or "").upper() != "V"):
+        return False
+    tier = buyer_evidence_tier(claim_dict.get("source"))
+    if tier is None or claim_dict.get("conf") is None:
+        return False
+    cap = BUYER_EVIDENCE_CAPS[tier]
+    if claim_dict["conf"] > cap:
+        claim_dict["conf"] = cap
+        return True
+    return False
 
 
 _V10_MSG = ("V10: a customer claim can only be VERIFIED by a typed buyer "
@@ -529,6 +562,10 @@ def add_claim(path, claim: str, st: str, conf, falsifier: str = "-",
         load_bearing = False
     if cls == "customer" and st == "V" and not has_buyer_evidence(source):
         raise ValueError(_V10_MSG)
+    _pending_clamp = {"cls": cls, "st": st, "source": source,
+                      "conf": None if conf in (None, "", "-") else float(conf)}
+    if _clamp_customer_conf(_pending_clamp):
+        conf = _pending_clamp["conf"]   # V15 cap applied; CLI reports it
 
     next_n = 1
     for c in doc["claims"]:
@@ -613,6 +650,7 @@ def set_claim(path, cid, st=None, conf=None, falsifier=None,
     if (hit.get("cls") == "customer" and hit["st"] == "V"
             and not has_buyer_evidence(hit["source"])):   # V10 guard
         raise ValueError(_V10_MSG)
+    _clamp_customer_conf(hit)                              # V15 cap
     _write(path, doc)
     return True
 
@@ -1111,6 +1149,18 @@ def _selftest() -> None:
         # ...a TYPED buyer interaction does
         set_claim(path, "C5", st="V",
                   source="buyer:call 3 booked walkthroughs 2026-07-30")
+
+        # V15 ladder: confidence is CAPPED by the evidence tier
+        set_claim(path, "C5", conf=0.9)   # call tier caps at 0.65
+        assert abs(parse(path)["claims"][4]["conf"] - 0.65) < 1e-9, \
+            parse(path)["claims"][4]
+        cid6 = add_claim(path, "waitlist demand is real", "V", 0.8,
+                         source="buyer:signup 214 waitlist joins, CPL $1.40",
+                         cls="customer")
+        c6 = next(c for c in parse(path)["claims"] if c["id"] == cid6.rstrip("*"))
+        assert abs(c6["conf"] - 0.40) < 1e-9, c6   # signup tier caps at 0.40
+        set_claim(path, cid6, st="A", source="-", cls="world")  # neutral reset
+        # (world, so downstream customer-count asserts stay undisturbed)
         ds = demand_status(parse(path))
         assert ds["verified"] == 1 and ds["unvalidated"] is False and ds["flag"] is None, ds
         set_claim(path, "C5", st="A", source="-")      # put it back for later asserts

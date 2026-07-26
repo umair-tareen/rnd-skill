@@ -192,6 +192,13 @@ failure, because it is invisible. `init` on an existing run PRESERVES it
 - V13: an untested §F flip ! SURFACE (`ledger.py stale`, wired into a daily
   brief if you have one). Recording ≠ surfacing; a ledger nobody reads is a
   ledger that changes nothing.
+- V15: buyer evidence is a LADDER with tool-enforced confidence caps:
+  `signup 0.40 · reply 0.50 · call 0.65 · signature 0.85 · payment 0.95`.
+  A customer claim's conf is clamped to its tier's ceiling ∴ a hot waitlist
+  ⊥ masquerade as proven revenue. Demand experiments are PRE-REGISTERED like
+  falsifiers: bar into the thesis (§F flip) BEFORE the experiment runs.
+  Rung-appropriate conclusions only: `signup` upgrades "will anyone care",
+  never "will anyone pay".
 - V14: the suite ! parse at least one COMMITTED artifact the run did NOT
   create (`tools/test_fixture.py` over `examples/acme`, in CI). A self-test
   that round-trips through its own writer is blind to writer+reader
