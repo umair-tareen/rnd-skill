@@ -25,5 +25,10 @@
       "token_re": "HL-Sync",
       "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
     }
-  ]
+  ],
+  "drift": {
+    "U1_new_figure": "289k daily active",
+    "U1_old_figure": "417k daily active",
+    "U2_orders": "order batch OR-P9"
+  }
 }

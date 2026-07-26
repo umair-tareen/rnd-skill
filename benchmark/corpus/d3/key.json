@@ -25,5 +25,10 @@
       "token_re": "LoRa-Mesh v3",
       "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
     }
-  ]
+  ],
+  "drift": {
+    "U1_new_figure": "44-month battery",
+    "U1_old_figure": "61-month battery",
+    "U2_orders": "order batch AP-P15"
+  }
 }

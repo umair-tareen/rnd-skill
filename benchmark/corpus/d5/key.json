@@ -25,5 +25,10 @@
       "token_re": "PSD-Lite tier 2",
       "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
     }
-  ]
+  ],
+  "drift": {
+    "U1_new_figure": "140-second reconcile",
+    "U1_old_figure": "94-second reconcile",
+    "U2_orders": "order batch IX-P11"
+  }
 }

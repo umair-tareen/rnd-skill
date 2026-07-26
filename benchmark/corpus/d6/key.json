@@ -25,5 +25,10 @@
       "token_re": "MeshGrid-2",
       "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
     }
-  ]
+  ],
+  "drift": {
+    "U1_new_figure": "7,900 active sellers",
+    "U1_old_figure": "11,400 active sellers",
+    "U2_orders": "order batch PH-P14"
+  }
 }

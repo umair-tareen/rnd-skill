@@ -25,5 +25,10 @@
       "token_re": "WavePipe",
       "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
     }
-  ]
+  ],
+  "drift": {
+    "U1_new_figure": "57% editing-time cut",
+    "U1_old_figure": "83% editing-time cut",
+    "U2_orders": "order batch CS-P8"
+  }
 }

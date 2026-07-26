@@ -25,5 +25,10 @@
       "token_re": "Corda-2",
       "note": "clean sourced fact; NOT-VERIFIED or missing = failure"
     }
-  ]
+  ],
+  "drift": {
+    "U1_new_figure": "1.7M requests/sec",
+    "U1_old_figure": "2.4M requests/sec",
+    "U2_orders": "order batch VX-P12"
+  }
 }
