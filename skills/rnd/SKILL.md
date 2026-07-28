@@ -217,6 +217,19 @@ confidence to the tier cap, so a hot waitlist can never masquerade as
 proven revenue. Only rung-appropriate conclusions: signup evidence upgrades
 "will anyone care", never "will anyone pay".
 
+## Move 6 - RETRO (every 3rd run, or before you act on a verdict)
+`ledger.py retro <thesis>` scores the thesis's OWN record, not the world's:
+calibration (stated confidence vs how often claims were later refuted),
+verdict stability, flips pre-registered but never tested, and days since
+real buyer evidence vs days since the last world claim. Read it before
+acting on any verdict. Two signals to take seriously:
+- **A verdict that never moved across 3+ runs** is well-founded OR
+  unfalsifiable in practice. Decide which, out loud. "reshape" is the safe
+  middle answer and a thesis can hide there indefinitely.
+- **"only ever been desk-checked"** means every run added world claims and
+  none added buyer evidence. That is the drift the class column exists to
+  expose, and no further research fixes it - only Move 5 does.
+
 ## Deliver + record
 - Present tightly: verdict, the biggest concern, what you're missing, the
   flip-condition, the cheapest test. Point at the run folder for the rest.

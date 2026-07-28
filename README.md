@@ -69,6 +69,15 @@ is the operator's. See it live in 30 seconds: `python tools/ledger.py demo`.
 | `tools/trim.py` | the cost + yield meter: fixed vs marginal tokens, run1-vs-runN delta, evidence-vs-assumption accounting |
 | `tools/state.py` | the run manifest: checkpoint every move, resume after a crash, redo (never skip) the interrupted move |
 | `tools/server.py` | optional MCP server exposing all of the above as 13 tools to any MCP client |
+| `ETHOS.md` | what this repo believes and why, in one file - every rule descends from it |
+
+`ledger.py retro` turns the tool on itself: calibration (stated confidence
+vs how often claims were later refuted), verdict stability, flips
+pre-registered but never tested, and days since real buyer evidence. Run on
+our own live thesis it reports "verdict history: reshape -> reshape ->
+reshape -> reshape (never moved)" and "buyer evidence: NEVER. This thesis
+has only ever been desk-checked." A tool that re-checks the world every run
+and never re-checks its own record has a hole where its thesis lives.
 
 All four tool modules are stdlib-only Python 3.10+, each with a built-in
 self-test. The model supplies judgment; the tools guarantee the mechanics.

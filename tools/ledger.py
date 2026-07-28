@@ -689,6 +689,103 @@ def set_flip(path, fid, last_checked=None, holds=None, condition=None) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# V16 retro: score the thesis's OWN track record, not the world's
+# ---------------------------------------------------------------------------
+
+def retro_report(doc: dict, today=None) -> dict:
+    """How well has this thesis predicted? Mechanical; no model judgment.
+
+    A ledger that re-checks the world every run and never re-checks itself
+    has a hole where its own thesis lives. This is that check.
+    """
+    claims = doc.get("claims") or []
+    diffs = [d for d in (doc.get("diffs") or []) if isinstance(d.get("run"), int)]
+    diffs.sort(key=lambda d: d["run"])
+
+    refuted = [c for c in claims if (c.get("st") or "").upper() == "R"]
+    verified = [c for c in claims if (c.get("st") or "").upper() == "V"]
+    assumed = [c for c in claims if (c.get("st") or "").upper() == "A"]
+    confs = [c["conf"] for c in verified if c.get("conf") is not None]
+    mean_v_conf = (sum(confs) / len(confs)) if confs else None
+    settled = len(verified) + len(refuted)
+    refute_rate = (len(refuted) / settled) if settled else None
+
+    # calibration gap: a claim marked V at mean conf X implies a refutation
+    # rate near (1 - X). Positive gap = overconfident.
+    calib_gap = None
+    if mean_v_conf is not None and refute_rate is not None:
+        calib_gap = round(refute_rate - (1 - mean_v_conf), 3)
+
+    verdicts = [d.get("verdict", "-") for d in diffs]
+    flips_never = [f for f in (doc.get("flips") or [])
+                   if (f.get("holds") or "").strip().lower() in ("untested", "", "-", "?")]
+    flip_ages = []
+    for f in flips_never:
+        age = _days_since(f.get("last_checked"), today)
+        if age is not None:
+            flip_ages.append((f["id"], age))
+
+    def _last_seen(pred):
+        ds = [_days_since(c.get("seen"), today) for c in claims if pred(c)]
+        ds = [d for d in ds if d is not None]
+        return min(ds) if ds else None
+
+    days_since_buyer = _last_seen(
+        lambda c: c.get("cls") == "customer" and has_buyer_evidence(c.get("source")))
+    days_since_world = _last_seen(lambda c: c.get("cls") == "world")
+
+    return {
+        "slug": doc.get("slug") or "-",
+        "runs": len(diffs),
+        "claims": len(claims),
+        "verified": len(verified), "assumed": len(assumed), "refuted": len(refuted),
+        "mean_verified_conf": None if mean_v_conf is None else round(mean_v_conf, 3),
+        "refutation_rate": None if refute_rate is None else round(refute_rate, 3),
+        "calibration_gap": calib_gap,
+        "verdict_history": verdicts,
+        "verdict_flipped": len(set(verdicts)) > 1,
+        "flips_never_tested": flip_ages,
+        "days_since_buyer_evidence": days_since_buyer,
+        "days_since_world_claim": days_since_world,
+        "demand_unvalidated": demand_status(doc)["unvalidated"],
+    }
+
+
+def render_retro(r: dict) -> str:
+    L = [f"RETRO {r['slug']} - {r['runs']} run(s), {r['claims']} claims", ""]
+    L.append(f"  settled: {r['verified']} verified / {r['refuted']} refuted"
+             f" ({r['assumed']} still assumed)")
+    if r["mean_verified_conf"] is not None:
+        L.append(f"  stated confidence on verified claims: {r['mean_verified_conf']}")
+    if r["refutation_rate"] is not None:
+        L.append(f"  refutation rate: {r['refutation_rate']}")
+    if r["calibration_gap"] is not None:
+        if r["calibration_gap"] > 0.15:
+            L.append(f"  !! OVERCONFIDENT by {r['calibration_gap']}: claims were "
+                     f"refuted more often than their confidence implied")
+        elif r["calibration_gap"] < -0.15:
+            L.append(f"  ~  underconfident by {abs(r['calibration_gap'])}: "
+                     f"claims survived better than stated")
+        else:
+            L.append(f"  calibration gap {r['calibration_gap']} (within +/-0.15)")
+    if r["verdict_history"]:
+        L.append(f"  verdict history: {' -> '.join(r['verdict_history'])}"
+                 + ("  (CHANGED)" if r["verdict_flipped"] else "  (never moved)"))
+        if not r["verdict_flipped"] and r["runs"] >= 3:
+            L.append("  !! a verdict that never moved across 3+ runs is either "
+                     "well-founded or unfalsifiable in practice - check which")
+    for fid, age in r["flips_never_tested"]:
+        L.append(f"  !! {fid} pre-registered {age}d ago and NEVER tested")
+    b, w = r["days_since_buyer_evidence"], r["days_since_world_claim"]
+    if w is not None and b is None:
+        L.append(f"  !! last world claim {w}d ago; buyer evidence: NEVER. "
+                 f"This thesis has only ever been desk-checked.")
+    elif w is not None and b is not None:
+        L.append(f"  last world claim {w}d ago; last buyer evidence {b}d ago")
+    return "\n".join(L)
+
+
+# ---------------------------------------------------------------------------
 # staleness: make an untested flip LOUD instead of merely recorded
 # ---------------------------------------------------------------------------
 
@@ -979,6 +1076,22 @@ def _cli_demo(args) -> int:
             shutil.rmtree(d, ignore_errors=True)
 
 
+def _cli_retro(args) -> int:
+    """Score the thesis's own track record (V16)."""
+    paths = ([p for p in sorted(Path(args.dir).glob("*.md")) if p.name != "_index.md"]
+             if args.dir else [Path(args.path)])
+    if not paths:
+        print("give a thesis path or --dir <folder>", file=sys.stderr)
+        return 2
+    for p in paths:
+        r = retro_report(parse(p), today=args.today)
+        if r["slug"] == "-":
+            r["slug"] = p.stem
+        print(render_retro(r))
+        print()
+    return 0
+
+
 def _cli_stale(args) -> int:
     """Exit 1 when anything needs attention, so a scheduled brief can gate on it."""
     if args.dir:
@@ -1184,6 +1297,17 @@ def _selftest() -> None:
         assert set_open(path, "Q1", st="x", closed_by="C4") is True
         assert parse(path)["opens"][0]["closed_by"] == "C4"
 
+        # --- V16 retro: the thesis scores its own record --------------------
+        rdoc = parse(path)
+        rr = retro_report(rdoc, today="2026-07-24")
+        assert rr["claims"] == len(rdoc["claims"]) and rr["runs"] == 2, rr
+        assert rr["refuted"] >= 1 and rr["verified"] >= 1, rr
+        assert rr["refutation_rate"] is not None and rr["calibration_gap"] is not None, rr
+        assert rr["days_since_buyer_evidence"] is None, "no buyer evidence yet"
+        txt = render_retro(rr)
+        assert "RETRO" in txt and "verdict history" in txt, txt
+        assert "only ever been desk-checked" in txt, txt
+
         # --- staleness: an untested flip must be LOUD, not merely recorded --
         sdoc = parse(path)
         sdoc["flips"] = [
@@ -1356,6 +1480,15 @@ def main() -> int:
     p_stale.add_argument("--days", type=int, default=7)
     p_stale.add_argument("--today", default=None, help="override today (YYYY-MM-DD)")
     p_stale.set_defaults(func=_cli_stale)
+
+    p_retro = sub.add_parser(
+        "retro", help="score the thesis's OWN track record: calibration, "
+                      "refutation rate, verdict stability, untested flips, "
+                      "and how long since real buyer evidence")
+    p_retro.add_argument("path", nargs="?")
+    p_retro.add_argument("--dir", default=None)
+    p_retro.add_argument("--today", default=None, help="override today (YYYY-MM-DD)")
+    p_retro.set_defaults(func=_cli_retro)
 
     p_test = sub.add_parser("selftest", help="run the built-in self-test")
     p_test.set_defaults(func=lambda a: (_selftest(), 0)[1])

@@ -192,6 +192,13 @@ failure, because it is invisible. `init` on an existing run PRESERVES it
 - V13: an untested §F flip ! SURFACE (`ledger.py stale`, wired into a daily
   brief if you have one). Recording ≠ surfacing; a ledger nobody reads is a
   ledger that changes nothing.
+- V16: the ledger ! be able to score ITSELF (`ledger.py retro`): calibration
+  (stated conf vs refutation rate), verdict stability across runs, flips
+  pre-registered but never tested, and days since REAL buyer evidence vs days
+  since the last world claim. A tool that re-checks the world every run and
+  never re-checks its own record has a hole where its thesis lives. A verdict
+  unchanged across 3+ runs is flagged: well-founded ∨ unfalsifiable-in-
+  practice, and the operator ! determine which.
 - V15: buyer evidence is a LADDER with tool-enforced confidence caps:
   `signup 0.40 · reply 0.50 · call 0.65 · signature 0.85 · payment 0.95`.
   A customer claim's conf is clamped to its tier's ceiling ∴ a hot waitlist
