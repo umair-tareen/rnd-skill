@@ -51,13 +51,8 @@ HEAD_LINES = 10
 TAIL_LINES = 10
 CHARS_PER_TOKEN = 4  # ai-trim's estimate, reused here for the footer stat
 
-KINDS = (
-    "json-blob",
-    "research-dump",
-    "social-scan",
-    "kill-transcript",
-    "generic",
-)
+# KINDS is derived from _COMPRESSORS at the bottom of this module - a
+# hand-kept second copy is one edit away from drifting.
 
 
 # ---------------------------------------------------------------------------
@@ -172,13 +167,7 @@ def compress_generic(output: str) -> str:
 
     deduped_lines = []
     for line, count in deduped:
-        if count > 2:
-            deduped_lines.append(f"{line}  (x{count})")
-        elif count == 2:
-            deduped_lines.append(line)
-            deduped_lines.append(line)
-        else:
-            deduped_lines.append(line)
+        deduped_lines.extend([f"{line}  (x{count})"] if count > 2 else [line] * count)
 
     if len(deduped_lines) <= THRESHOLD + 5:
         return "\n".join(deduped_lines)
@@ -270,6 +259,9 @@ _COMPRESSORS = {
     "kill-transcript": compress_kill_transcript,
     "generic": compress_generic,
 }
+
+
+KINDS = tuple(_COMPRESSORS)
 
 
 def squeeze(text: str, kind: str | None = None) -> dict:

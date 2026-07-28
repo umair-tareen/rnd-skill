@@ -31,20 +31,9 @@ Invariants this module enforces mechanically (see SPEC SS V):
     V8 - every run's diff append + meter update survives a crash (atomic write).
     V9 - file > 500 lines -> compact SS D oldest-first, never split the file.
 
-API:
-    new(slug, title) -> str                    fresh template text (unwritten)
-    parse(path) -> dict                        {verdict, claims, flips, opens,
-                                                 diffs, meter, bugs, slug, title, created}
-    add_claim(path, claim, st, conf, falsifier, source, load_bearing=False) -> id
-    set_verdict(path, verdict, conf, run, date, one_line) -> None
-    append_diff(path, run, date, delta, verdict, cost) -> None
-    compact(path) -> dict                      report; no-op if under budget
-    render(doc) -> str                         serialize a parsed/mutated doc back
-
-CLI:
-    python ledger.py new <slug> "<title>" [--out <path>]
-    python ledger.py show <path>
-    python ledger.py selftest
+Public API = the module's function signatures; CLI = `ledger.py --help`.
+Both are the source of truth: a hand-kept copy here went stale (it listed 3
+of 12 subcommands and none of the mutation API), which is why it is gone.
 """
 from __future__ import annotations
 

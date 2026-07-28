@@ -1,4 +1,4 @@
-﻿"""state.py -- the /rnd run manifest: checkpoint, crash, resume.
+"""state.py -- the /rnd run manifest: checkpoint, crash, resume.
 
 Spec: SPEC.md at the repo root.
 
@@ -20,22 +20,7 @@ Manifest lives at <run-folder>/STATE.md, is markdown (a human and a model both
 read it for ~100 tokens), and is written atomically so a kill mid-write cannot
 corrupt it.
 
-API:
-    init(run_folder, target, moves, thesis=None) -> dict
-    read(run_folder) -> dict
-    start(run_folder, move) -> dict
-    done(run_folder, move, note="-", artifact="-") -> dict
-    fail(run_folder, move, why) -> dict
-    skip(run_folder, move, why) -> dict
-    next_pending(run_folder) -> str | None
-    resume_brief(run_folder) -> str
-
-CLI:
-    python state.py init <run-folder> --target T [--moves A,B,C] [--thesis P]
-    python state.py start|done|fail|skip <run-folder> <move> [--note N] [--artifact F]
-    python state.py next <run-folder>          # prints the move to run, or ALL-DONE
-    python state.py show <run-folder>          # the resume brief
-    python state.py --self-test
+Public API = the module's function signatures; CLI = `state.py --help`.
 """
 from __future__ import annotations
 

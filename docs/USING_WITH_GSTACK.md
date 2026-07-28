@@ -40,15 +40,8 @@ compose cleanly because they never do the same job:
 
 ## Install both
 
-```bash
-# gstack per its README, then:
-git clone https://github.com/umair-tareen/rnd-skill
-mkdir -p ~/.claude/skills/rnd
-cp rnd-skill/skills/rnd/SKILL.md ~/.claude/skills/rnd/
-cp -r rnd-skill/tools ~/.claude/skills/rnd/tools
-```
-
-No coordination needed: gstack writes design docs, rnd writes theses; they
+Install gstack per its README, then rnd-skill per the
+[quickstart](../README.md#quickstart). No coordination needed: gstack writes design docs, rnd writes theses; they
 share nothing but your judgment. The one behavioral change worth making:
 when office-hours ends, don't let "demand reality" stay a paragraph in a
 design doc - make it a claim with a falsifier, and let the ledger hold it

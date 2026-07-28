@@ -1,4 +1,4 @@
-﻿# RUN STATE: run-1-full-sweep
+# RUN STATE: run-1-full-sweep
 target: Acme changelog tool
 started: 2026-07-25
 thesis: examples/acme/acme.md

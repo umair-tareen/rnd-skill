@@ -1,4 +1,4 @@
-﻿# RUN STATE: run-2-recheck
+# RUN STATE: run-2-recheck
 target: Acme changelog tool (recheck)
 started: 2026-07-25
 thesis: examples/acme/acme.md
